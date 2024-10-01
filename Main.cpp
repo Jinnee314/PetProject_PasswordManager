@@ -64,6 +64,21 @@ int main()
 	return 0;
 }
 
+vector<string_view> splitWords(string_view str)
+{
+	vector<string_view> words;
+	str.remove_prefix(str.find_first_not_of(' '));
+
+	while (!str.empty())
+	{
+		auto endWord = str.find(' ');
+		words.push_back(str.substr(0, endWord));
+		str.remove_prefix(endWord == str.npos ? str.size() : endWord);
+	}
+
+	return words;
+}
+
 void showNameSavedRecords(const PasswordManager& ps)
 {
 	auto names = ps.getNames();
