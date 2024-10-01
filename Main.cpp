@@ -64,3 +64,11 @@ int main()
 	return 0;
 }
 
+void showNameSavedRecords(const PasswordManager& ps)
+{
+	auto names = ps.getNames();
+	for (size_t i = 0; i < names.size(); ++i)
+	{
+		std::cout << i << ". " << names[i] << "\n";
+	}
+}
