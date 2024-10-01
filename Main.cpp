@@ -26,18 +26,7 @@ int main()
 	string commandWithArgs;
 	while (getline(cin, commandWithArgs))
 	{
-		Command comm;
-		vector<Arg> args;
-		try
-		{
-			auto res = parseCommandWithArgs(commandWithArgs);
-			comm = move(res.first);
-			args = move(res.second);
-		}
-		catch (const std::exception&)
-		{
-
-		}
+		auto [comm, args] = parseCommandWithArgs(commandWithArgs);
 
 		switch (comm)
 		{
