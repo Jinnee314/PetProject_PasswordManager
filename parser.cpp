@@ -53,7 +53,7 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 			auto itConv = convertArg.find(tokens[i]);
 			if (itConv == convertArg.end())
 			{
-				res.second.push_back({ Flags::Error, "" });
+				res.second.push_back({ FlagsArg::Error, move(tokens[i])});
 				return res;
 			}
 			res.second.push_back({ itConv->second, "" });
@@ -66,7 +66,7 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 		}
 		else // если до не было флага, значит это просто аргумент
 		{
-			res.second.push_back({ Flags::Default, move(tokens[i]) });
+			res.second.push_back({ FlagsArg::Default, move(tokens[i]) });
 		}		
 	}
 

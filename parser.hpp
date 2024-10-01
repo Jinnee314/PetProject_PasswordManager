@@ -9,11 +9,11 @@ enum class Command {
 	Add, Del, Show, Change, Help, Error
 };
 
-enum class Flags {
+enum class FlagsArg {
 	Name, Login, Pass, Des, Num, Default, Error
 };
 
-using Arg = std::pair<Flags, std::string_view>;
+using Arg = std::pair<FlagsArg, std::string_view>;
 using CommandWithArgs = std::pair<Command, std::vector<Arg>>;
 
 const std::map<std::string_view, Command> convertCommand
@@ -25,13 +25,13 @@ const std::map<std::string_view, Command> convertCommand
 	{"help", Command::Help}
 };
 
-const std::map<std::string_view, Flags> convertArg
+const std::map<std::string_view, FlagsArg> convertArg
 {
-	{"--name", Flags::Name},
-	{"--login", Flags::Login},
-	{"--pass", Flags::Pass},
-	{"--des", Flags::Des},
-	{"--num", Flags::Num}
+	{"--name", FlagsArg::Name},
+	{"--login", FlagsArg::Login},
+	{"--pass", FlagsArg::Pass},
+	{"--des", FlagsArg::Des},
+	{"--num", FlagsArg::Num}
 };
 
 std::vector<std::string_view> splitWords(std::string_view str);
