@@ -5,12 +5,12 @@
 #include <iterator>
 #include <utility>
 
-void testReadDataFromStorage()
+void testConstructAndDestruct()
 {
 	{
 		PasswordManager ps("testStorage");
 
-		ASSERT_EQUAL(ps.getRecords().size(), 0);
+		ASSERT_EQUAL(ps.numRecords(), 0);
 
 		ps.AddRecord("f", "l", "p");
 		ps.AddRecord("s", "l", "p");
@@ -21,10 +21,20 @@ void testReadDataFromStorage()
 		Record exp1{ "f", "l", "p" };
 		Record exp2{ "s", "l", "p" };
 
-		auto records = ps.getRecords();
-		ASSERT_EQUAL(*(records.begin()), exp1);
-		ASSERT_EQUAL(*(std::next(records.begin())), exp2);
+		ASSERT_EQUAL(ps.getRecordByName(exp1.name), exp1);
+		ASSERT_EQUAL(ps.getRecordByName(exp2.name), exp2);
 	}
+}
+
+void testGetNames()
+{
+	PasswordManager ps("testStorage");
+
+	auto names = ps.getNames();
+
+	std::vector<std::string> exp{ "f", "s" };
+
+	ASSERT_EQUAL(names, exp);
 }
 
 void testAddRecord()
@@ -55,11 +65,65 @@ void testAddRecord()
 	ASSERT_EQUAL(ps.getRecordByName("third"), exp3);
 }
 
+void testChangeRecord()
+{
+	PasswordManager ps("testStorage");
 
+	{
+		Record exp{ "test name","test login", "test pass", "test desription" };
+		auto rec = ps.getRecordByNumber(1);
+		ps.changeLoginRecord(rec.name, "test login");
+		ps.changeDescriptionRecord(rec.name, "test desription");
+		ps.changeNameRecord(rec.name, "test name");
+		ps.changePasswordRecord("test name", "test pass");
+
+		rec = ps.getRecordByName("test name");
+		ASSERT_EQUAL(rec, exp);
+	}
+
+	{
+		auto rec = ps.getRecordByName("test name");
+		auto name = rec.name;
+		ps.changeNameRecord(rec.name, "");
+		ASSERT_EQUAL(ps.getRecordByName(name), name);
+	}
+}
+
+void testDelete()
+{
+	PasswordManager ps("testStorage");
+
+	{
+		auto numRec = ps.numRecords();
+		ps.deleteRecordByName("qwertyuioasdfghjk");
+		ASSERT_EQUAL(ps.numRecords(), numRec)
+	}
+
+	{
+		Record exp{ "","","","" };
+		auto recName = ps.getRecordByNumber(1).name;
+		ps.deleteRecordByNumber(1);
+		auto res = ps.getRecordByName(recName);
+		ASSERT_EQUAL(res, exp);
+	}
+
+	{
+		Record exp{ "","","","" };
+		ps.deleteRecordByName("test name");
+		auto res = ps.getRecordByName("test name");
+		ASSERT_EQUAL(res, exp);
+	}
+
+	ps.clearData();
+	ASSERT_EQUAL(ps.numRecords(), 0);
+}
 
 void testAll()
 {
 	MyUnitTest::TestRunner tr;
-	RUN_TEST(tr, testReadDataFromStorage);
+	RUN_TEST(tr, testConstructAndDestruct);
+	RUN_TEST(tr, testGetNames);
 	RUN_TEST(tr, testAddRecord);
+	RUN_TEST(tr, testChangeRecord);
+	RUN_TEST(tr, testDelete);
 }
