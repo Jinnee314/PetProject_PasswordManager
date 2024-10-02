@@ -1,4 +1,6 @@
 #include "PasswordManager.hpp"
+#include "parser.hpp"
+
 #include <iostream>
 
 bool operator==(const Record& l, const Record& r)
@@ -13,10 +15,12 @@ bool operator!=(const Record& l, const Record& r)
 
 std::ostream& operator<<(std::ostream& out, const Record& rec)
 {
-	out << "(" << rec.name << ", "
-		<< rec.login << ", "
-		<< rec.password << ", "
-		<< rec.description << ")";
+	out << "Name: " << rec.name << "\n"
+		<< "Description:\n";
+	for (const auto& str : splitLongStringForOut(rec.description))
+	{
+		out << str << '\n';
+	}
 
 	return out;
 }
