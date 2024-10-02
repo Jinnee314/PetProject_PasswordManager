@@ -38,6 +38,12 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	return res;
 }
 
+const Record& PasswordManager::getRecordByName(std::string_view name) const
+{
+	auto keyAndRecord = data.find(name);
+	return keyAndRecord == data.end() ? Record{} : keyAndRecord->second;
+}
+
 size_t PasswordManager::numRecords() const
 {
 	return data.size();
