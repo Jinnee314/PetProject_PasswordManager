@@ -20,6 +20,7 @@ class PasswordManager
 private:
 	std::filesystem::path wayToStorages;
 	std::map<std::string, Record> data;
+	Record& currRec;
 
 public:
 	explicit PasswordManager(std::filesystem::path wayToStorage);
@@ -32,16 +33,19 @@ public:
 	bool AddRecord(const Record& rec);
 	//bool AddRecord(Record rec);
 
-	std::vector<std::string> getNames() const;
-	std::map<std::string, Record> getRecords() const;
-
 	void deleteRecordByName(const std::string& name);
 	void deleteRecordByNumber(size_t number);
 
-	Record& getRecordByName(const std::string& name) const;
-	Record& getRecordByNumber(size_t number) const;
+	void changeNameRecord(std::string&& newName);
+	void changeLoginRecord(std::string&& newLogin);
+	void changePasswordRecord(std::string&& newPass);
+	void changeDescriptionRecord(std::string&& newDes);
 
-	Record& getRecord(const std::string& input) const;	
+	std::vector<std::string> getNames() const;
+	const Record& getRecordByName(const std::string& name) const;
+	const Record& getRecordByNumber(size_t number) const;
+
+	size_t numRecords() const;
 
 	void clearData();
 };
