@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <string_view>
 #include <map>
 
 struct Record
@@ -19,7 +20,7 @@ class PasswordManager
 {
 private:
 	std::filesystem::path wayToStorages;
-	std::map<std::string, Record> data;
+	std::map<std::string_view, Record> data;
 	Record& currRec;
 
 public:
@@ -33,7 +34,7 @@ public:
 	bool AddRecord(const Record& rec);
 	//bool AddRecord(Record rec);
 
-	void deleteRecordByName(const std::string& name);
+	void deleteRecordByName(std::string_view name);
 	void deleteRecordByNumber(size_t number);
 
 	void changeNameRecord(std::string&& newName);
@@ -42,7 +43,7 @@ public:
 	void changeDescriptionRecord(std::string&& newDes);
 
 	std::vector<std::string> getNames() const;
-	const Record& getRecordByName(const std::string& name) const;
+	const Record& getRecordByName(std::string_view name) const;
 	const Record& getRecordByNumber(size_t number) const;
 
 	size_t numRecords() const;
