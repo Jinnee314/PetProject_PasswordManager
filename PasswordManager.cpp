@@ -24,3 +24,8 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 
 	return out;
 }
+
+size_t PasswordManager::numRecords() const
+{
+	return data.size();
+}
