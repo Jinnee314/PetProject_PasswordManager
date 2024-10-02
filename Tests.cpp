@@ -32,7 +32,7 @@ void testGetNames()
 
 	auto names = ps.getNames();
 
-	std::vector<std::string> exp{ "f", "s" };
+	std::vector<std::string_view> exp{ "f", "s" };
 
 	ASSERT_EQUAL(names, exp);
 }
@@ -85,7 +85,7 @@ void testChangeRecord()
 		auto rec = ps.getRecordByName("test name");
 		auto name = rec.name;
 		ps.changeNameRecord("");
-		ASSERT_EQUAL(ps.getRecordByName(name), name);
+		ASSERT_EQUAL(ps.getRecordByName(name).name, name);
 	}
 }
 
