@@ -72,10 +72,10 @@ void testChangeRecord()
 	{
 		Record exp{ "test name","test login", "test pass", "test desription" };
 		auto rec = ps.getRecordByNumber(1);
-		ps.changeLoginRecord(rec.name, "test login");
-		ps.changeDescriptionRecord(rec.name, "test desription");
-		ps.changeNameRecord(rec.name, "test name");
-		ps.changePasswordRecord("test name", "test pass");
+		ps.changeLoginRecord("test login");
+		ps.changeDescriptionRecord("test desription");
+		ps.changeNameRecord("test name");
+		ps.changePasswordRecord("test pass");
 
 		rec = ps.getRecordByName("test name");
 		ASSERT_EQUAL(rec, exp);
@@ -84,7 +84,7 @@ void testChangeRecord()
 	{
 		auto rec = ps.getRecordByName("test name");
 		auto name = rec.name;
-		ps.changeNameRecord(rec.name, "");
+		ps.changeNameRecord("");
 		ASSERT_EQUAL(ps.getRecordByName(name), name);
 	}
 }
