@@ -25,6 +25,19 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 	return out;
 }
 
+std::vector<std::string_view> PasswordManager::getNames() const
+{
+	std::vector<std::string_view> res;
+	res.reserve(data.size());
+
+	for (const auto& [key,  value] : data)
+	{
+		res.push_back(key);
+	}
+
+	return res;
+}
+
 size_t PasswordManager::numRecords() const
 {
 	return data.size();

@@ -42,7 +42,7 @@ public:
 	void changePasswordRecord(std::string&& newPass);
 	void changeDescriptionRecord(std::string&& newDes);
 
-	std::vector<std::string> getNames() const;
+	std::vector<std::string_view> getNames() const;
 	const Record& getRecordByName(std::string_view name) const;
 	const Record& getRecordByNumber(size_t number) const;
 
