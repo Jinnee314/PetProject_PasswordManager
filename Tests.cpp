@@ -100,17 +100,33 @@ void testDelete()
 	}
 
 	{
-		Record exp{ "","","","" };
+		Record exp{};
 		auto recName = ps.getRecordByNumber(1).name;
 		ps.deleteRecordByNumber(1);
-		auto res = ps.getRecordByName(recName);
+		Record res;
+		try
+		{
+			res = ps.getRecordByName(recName);
+		}
+		catch (const std::exception&)
+		{
+			res = Record{};
+		}
 		ASSERT_EQUAL(res, exp);
 	}
 
 	{
-		Record exp{ "","","","" };
+		Record exp{};
 		ps.deleteRecordByName("test name");
-		auto res = ps.getRecordByName("test name");
+		Record res;
+		try
+		{
+			res = ps.getRecordByName("test name");
+		}
+		catch (const std::exception&)
+		{
+			res = Record{};
+		}
 		ASSERT_EQUAL(res, exp);
 	}
 
