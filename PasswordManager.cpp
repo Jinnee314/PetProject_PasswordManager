@@ -2,6 +2,7 @@
 #include "parser.hpp"
 
 #include <iostream>
+#include <iterator>
 
 bool operator==(const Record& l, const Record& r)
 {
@@ -30,7 +31,7 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	std::vector<std::string_view> res;
 	res.reserve(data.size());
 
-	for (const auto& [key,  value] : data)
+	for (const auto& [key, value] : data)
 	{
 		res.push_back(key);
 	}
@@ -38,10 +39,32 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	return res;
 }
 
-const Record& PasswordManager::getRecordByName(std::string_view name) const
+Record PasswordManager::getRecordByName(std::string_view name) const
 {
 	auto keyAndRecord = data.find(name);
-	return keyAndRecord == data.end() ? Record{} : keyAndRecord->second;
+	if (keyAndRecord == end(data))
+	{
+		return Record{};
+	}
+
+	currRec = keyAndRecord->second;
+	return currRec;
+
+}
+
+Record PasswordManager::getRecordByNumber(size_t number) const
+{
+	if (number >= data.size())
+	{
+		return Record{};
+	}
+
+	size_t half = data.size() / 2;
+
+	currRec = number > half ? 
+		std::prev(end(data), number - half)->second : std::next(begin(data), number)->second;
+
+	return currRec;
 }
 
 size_t PasswordManager::numRecords() const
