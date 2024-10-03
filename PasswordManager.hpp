@@ -26,13 +26,12 @@ private:
 public:
 	explicit PasswordManager(std::filesystem::path wayToStorage);
 
-	bool AddRecord(
+	void AddRecord(
 		const std::string& name,
 		const std::string& login,
 		const std::string& password,
 		const std::string& description = "");
-	bool AddRecord(const Record& rec);
-	//bool AddRecord(Record rec);
+	void AddRecord(Record rec);
 
 	void deleteRecordByName(std::string_view name);
 	void deleteRecordByNumber(size_t number);

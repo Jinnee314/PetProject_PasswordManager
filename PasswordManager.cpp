@@ -71,3 +71,14 @@ size_t PasswordManager::numRecords() const
 {
 	return data.size();
 }
+
+void PasswordManager::AddRecord(const std::string& name, const std::string& login, const std::string& password, const std::string& description = "")
+{
+	Record rec{ name, login, password, description };
+	AddRecord(std::move(rec));
+}
+
+void PasswordManager::AddRecord(Record rec)
+{
+	data.insert({ std::string_view(rec.name), std::move(rec) });
+}
