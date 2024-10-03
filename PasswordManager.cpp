@@ -67,7 +67,7 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	return res;
 }
 
-Record PasswordManager::getRecordByName(std::string_view name) const
+Record PasswordManager::getRecordByName(std::string name) const
 {
 	auto keyAndRecord = data.find(name);
 	if (keyAndRecord == end(data))

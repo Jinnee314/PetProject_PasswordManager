@@ -20,7 +20,7 @@ class PasswordManager
 {
 private:
 	std::filesystem::path wayToStorages;
-	std::map<std::string_view, Record> data;
+	std::map<std::string, Record> data;
 	Record& currRec;
 
 public:
@@ -33,7 +33,7 @@ public:
 		std::string description = "");
 	void addRecord(Record rec);
 
-	void deleteRecordByName(std::string_view name);
+	void deleteRecordByName(std::string name);
 	void deleteRecordByNumber(size_t number);
 
 	void changeNameRecord(std::string newName);
@@ -42,7 +42,7 @@ public:
 	void changeDescriptionRecord(std::string newDes);
 
 	std::vector<std::string_view> getNames() const;
-	Record getRecordByName(std::string_view name) const;
+	Record getRecordByName(std::string name) const;
 	Record getRecordByNumber(size_t number) const;
 
 	size_t numRecords() const;
