@@ -53,16 +53,28 @@ void testAddRecord()
 	Record exp2{ "second", "log", "pass", "" };
 	ASSERT_EQUAL(rec2, exp2);
 
-	auto isInserted = ps.AddRecord("", "", "");
-	ASSERT(!isInserted);
+	auto size = ps.numRecords();
+	ps.AddRecord("", "", "");
+	ASSERT_EQUAL(ps.numRecords(), size);
 
-	isInserted = ps.AddRecord("first", "log2", "pass2");
-	ASSERT(!isInserted);
+	ps.AddRecord("first", "log2", "pass2");
+	ASSERT_EQUAL(ps.numRecords(), size);
 
-	Record r3{ "third", "log", "pass" };
+	Record r3{ "third", "log", "pass", ""};
+	Record r4{ "ssssssssss", "zzzz", "bbbb", "" };
 	Record exp3 = r3;
+	Record exp4 = r4;
 	ps.AddRecord(std::move(r3));
+	ps.AddRecord(std::move(r4));
 	ASSERT_EQUAL(ps.getRecordByName("third"), exp3);
+	ASSERT_EQUAL(ps.getRecordByName("ssssssssss"), exp4);
+
+	Record r5{ "someText", "rrrr", "tttt", "ddd" };
+	Record r6{ "AaAaAaAaAa", "asdfga", "ssss", "dddd" };
+	ps.AddRecord(r5);
+	ps.AddRecord(r6);
+	ASSERT_EQUAL(ps.getRecordByName("someText"), r5);
+	ASSERT_EQUAL(ps.getRecordByName("AaAaAaAaAa"), r6);
 }
 
 void testChangeRecord()
