@@ -105,3 +105,9 @@ size_t PasswordManager::numRecords() const
 {
 	return data.size();
 }
+
+void PasswordManager::clearData()
+{
+	data.clear();
+	currRec = data.begin();
+}
