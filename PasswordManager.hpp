@@ -21,7 +21,7 @@ class PasswordManager
 private:
 	std::filesystem::path wayToStorages;
 	std::map<std::string, Record> data;
-	Record& currRec;
+	std::map<std::string, Record>::iterator currRec;
 
 public:
 	explicit PasswordManager(std::filesystem::path wayToStorage);
@@ -42,8 +42,8 @@ public:
 	void changeDescriptionRecord(std::string newDes);
 
 	std::vector<std::string_view> getNames() const;
-	Record getRecordByName(std::string name) const;
-	Record getRecordByNumber(size_t number) const;
+	Record getRecordByName(std::string name);
+	Record getRecordByNumber(size_t number);
 
 	size_t numRecords() const;
 

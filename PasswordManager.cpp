@@ -39,19 +39,27 @@ void PasswordManager::addRecord(Record rec)
 	data.emplace(std::string_view(rec.name), std::move(rec));
 }
 
+void PasswordManager::changeNameRecord(std::string newName)
+{
+	auto tmp = data.extract(currRec);
+	tmp.key() = newName;
+	currRec = data.insert(std::move(tmp)).position;
+	currRec->second.name = std::move(newName);
+}
+
 void PasswordManager::changeLoginRecord(std::string newLogin)
 {
-	currRec.login = std::move(newLogin);
+	currRec->second.login = std::move(newLogin);
 }
 
 void PasswordManager::changePasswordRecord(std::string newPass)
 {
-	currRec.password = std::move(newPass);
+	currRec->second.password = std::move(newPass);
 }
 
 void PasswordManager::changeDescriptionRecord(std::string newDes)
 {
-	currRec.description = std::move(newDes);
+	currRec->second.description = std::move(newDes);
 }
 
 std::vector<std::string_view> PasswordManager::getNames() const
@@ -67,20 +75,18 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	return res;
 }
 
-Record PasswordManager::getRecordByName(std::string name) const
+Record PasswordManager::getRecordByName(std::string name)
 {
-	auto keyAndRecord = data.find(name);
-	if (keyAndRecord == end(data))
+	currRec = data.find(name);
+	if (currRec == end(data))
 	{
 		return Record{};
 	}
 
-	currRec = keyAndRecord->second;
-	return currRec;
-
+	return currRec->second;
 }
 
-Record PasswordManager::getRecordByNumber(size_t number) const
+Record PasswordManager::getRecordByNumber(size_t number)
 {
 	if (number >= data.size())
 	{
@@ -90,9 +96,9 @@ Record PasswordManager::getRecordByNumber(size_t number) const
 	size_t half = data.size() / 2;
 
 	currRec = number > half ? 
-		std::prev(end(data), number - half)->second : std::next(begin(data), number)->second;
+		std::prev(end(data), number - half) : std::next(begin(data), number);
 
-	return currRec;
+	return currRec->second;
 }
 
 size_t PasswordManager::numRecords() const
