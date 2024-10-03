@@ -26,6 +26,47 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 	return out;
 }
 
+void PasswordManager::AddRecord(std::string name, std::string login, std::string password, std::string description)
+{
+	if (name.empty()) return;
+
+	Record rec{ move(name), move(login), move(password), move(description) };
+	AddRecord(std::move(rec));
+}
+
+void PasswordManager::AddRecord(Record rec)
+{
+	data.insert({ std::string_view(rec.name), std::move(rec) });
+}
+
+void PasswordManager::changeLoginRecord(std::string newLogin)
+{
+	currRec.login = std::move(newLogin);
+}
+
+void PasswordManager::changePasswordRecord(std::string newPass)
+{
+	currRec.password = std::move(newPass);
+}
+
+void PasswordManager::changeDescriptionRecord(std::string newDes)
+{
+	currRec.description = std::move(newDes);
+}
+
+void PasswordManager::AddRecord(std::string name, std::string login, std::string password, std::string description)
+{
+	if (name.empty()) return;
+
+	Record rec{ move(name), move(login), move(password), move(description) };
+	AddRecord(std::move(rec));
+}
+
+void PasswordManager::AddRecord(Record rec)
+{
+	data.insert({ std::string_view(rec.name), std::move(rec) });
+}
+
 std::vector<std::string_view> PasswordManager::getNames() const
 {
 	std::vector<std::string_view> res;
@@ -70,17 +111,4 @@ Record PasswordManager::getRecordByNumber(size_t number) const
 size_t PasswordManager::numRecords() const
 {
 	return data.size();
-}
-
-void PasswordManager::AddRecord(std::string name, std::string login, std::string password, std::string description)
-{
-	if (name.empty()) return;
-	
-	Record rec{ move(name), move(login), move(password), move(description) };
-	AddRecord(std::move(rec));
-}
-
-void PasswordManager::AddRecord(Record rec)
-{
-	data.insert({ std::string_view(rec.name), std::move(rec) });
 }

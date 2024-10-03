@@ -36,10 +36,10 @@ public:
 	void deleteRecordByName(std::string_view name);
 	void deleteRecordByNumber(size_t number);
 
-	void changeNameRecord(std::string&& newName);
-	void changeLoginRecord(std::string&& newLogin);
-	void changePasswordRecord(std::string&& newPass);
-	void changeDescriptionRecord(std::string&& newDes);
+	void changeNameRecord(std::string newName);
+	void changeLoginRecord(std::string newLogin);
+	void changePasswordRecord(std::string newPass);
+	void changeDescriptionRecord(std::string newDes);
 
 	std::vector<std::string_view> getNames() const;
 	Record getRecordByName(std::string_view name) const;
