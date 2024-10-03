@@ -12,8 +12,8 @@ void testConstructAndDestruct()
 
 		ASSERT_EQUAL(ps.numRecords(), 0);
 
-		ps.AddRecord("f", "l", "p");
-		ps.AddRecord("s", "l", "p");
+		ps.addRecord("f", "l", "p");
+		ps.addRecord("s", "l", "p");
 	}
 
 	{
@@ -41,8 +41,8 @@ void testAddRecord()
 {
 	PasswordManager ps("testStorage");
 	
-	ps.AddRecord("first", "log", "pass");
-	ps.AddRecord("second", "log", "pass");
+	ps.addRecord("first", "log", "pass");
+	ps.addRecord("second", "log", "pass");
 
 	auto rec = ps.getRecordByName("first");
 	Record exp{ "first", "log", "pass", "" };
@@ -54,25 +54,25 @@ void testAddRecord()
 	ASSERT_EQUAL(rec2, exp2);
 
 	auto size = ps.numRecords();
-	ps.AddRecord("", "", "");
+	ps.addRecord("", "", "");
 	ASSERT_EQUAL(ps.numRecords(), size);
 
-	ps.AddRecord("first", "log2", "pass2");
+	ps.addRecord("first", "log2", "pass2");
 	ASSERT_EQUAL(ps.numRecords(), size);
 
 	Record r3{ "third", "log", "pass", ""};
 	Record r4{ "ssssssssss", "zzzz", "bbbb", "" };
 	Record exp3 = r3;
 	Record exp4 = r4;
-	ps.AddRecord(std::move(r3));
-	ps.AddRecord(std::move(r4));
+	ps.addRecord(std::move(r3));
+	ps.addRecord(std::move(r4));
 	ASSERT_EQUAL(ps.getRecordByName("third"), exp3);
 	ASSERT_EQUAL(ps.getRecordByName("ssssssssss"), exp4);
 
 	Record r5{ "someText", "rrrr", "tttt", "ddd" };
 	Record r6{ "AaAaAaAaAa", "asdfga", "ssss", "dddd" };
-	ps.AddRecord(r5);
-	ps.AddRecord(r6);
+	ps.addRecord(r5);
+	ps.addRecord(r6);
 	ASSERT_EQUAL(ps.getRecordByName("someText"), r5);
 	ASSERT_EQUAL(ps.getRecordByName("AaAaAaAaAa"), r6);
 }

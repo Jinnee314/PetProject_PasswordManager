@@ -211,6 +211,6 @@ void addNewRecord(PasswordManager& ps, const vector<Arg>& args)
 	
 	if (save)
 	{
-		ps.AddRecord(move(newRec));
+		ps.addRecord(move(newRec));
 	}
 }
