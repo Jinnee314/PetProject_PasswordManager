@@ -25,6 +25,7 @@ private:
 
 public:
 	explicit PasswordManager(std::filesystem::path wayToStorage);
+	~PasswordManager();
 
 	void addRecord(
 		std::string name,
