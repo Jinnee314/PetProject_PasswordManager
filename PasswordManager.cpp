@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <iterator>
+#include <cryptopp/modes.h>
+#include <cryptopp/base64.h>
 
 bool operator==(const Record& l, const Record& r)
 {
@@ -31,6 +33,25 @@ PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
 	size_t half = data.size() / 2;
 	return number > half ?
 		std::prev(end(data), data.size() - number) : std::next(begin(data), number);
+}
+
+void PasswordManager::decrypt()
+{
+	using namespace CryptoPP;
+
+	std::string openText;
+
+	//Расшифровываем строку fileData и записываем результат в строку openText
+	CBC_Mode<AES>::Decryption decryptAES(aesKey.data(), aesKey.size(), cbcIv.data());
+	StringSource ss(
+		fileData, true,
+		new StreamTransformationFilter(
+			decryptAES,
+			new StringSink(openText)
+		)
+	);
+
+	fileData = std::move(openText);
 }
 
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
