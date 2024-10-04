@@ -26,6 +26,13 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 	return out;
 }
 
+PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
+{
+	size_t half = data.size() / 2;
+	return number > half ?
+		std::prev(end(data), data.size() - number) : std::next(begin(data), number);
+}
+
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
 {
 	if (name.empty()) return;
@@ -52,6 +59,16 @@ void PasswordManager::deleteRecordByName(std::string name)
 		return;
 	}
 	data.erase(name);
+}
+
+void PasswordManager::deleteRecordByNumber(size_t number)
+{
+	if (number >= data.size())
+	{
+		return;
+	}
+
+	data.erase(getIterByNumber(number));
 }
 
 void PasswordManager::changeNameRecord(std::string newName)
@@ -111,11 +128,7 @@ Record PasswordManager::getRecordByNumber(size_t number)
 	{
 		return Record{};
 	}
-
-	size_t half = data.size() / 2;
-
-	currRec = number > half ? 
-		std::prev(end(data), number - half) : std::next(begin(data), number);
+	currRec = getIterByNumber(number);
 
 	return currRec->second;
 }

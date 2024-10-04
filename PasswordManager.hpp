@@ -19,9 +19,17 @@ std::ostream& operator<<(std::ostream& out, const Record& rec);
 class PasswordManager
 {
 private:
+	using DataStorage = std::map<std::string, Record>;
+	using DataIter = DataStorage::iterator;
+
 	std::filesystem::path wayToStorages;
-	std::map<std::string, Record> data;
-	std::map<std::string, Record>::iterator currRec;
+	DataStorage data;
+	DataIter currRec;
+
+	// Получение итератора по номеру.
+	// Проверка номера на выход за пределы размера 
+	// возлагаются на вызывающую функцию.
+	DataIter getIterByNumber(size_t number);
 
 public:
 	explicit PasswordManager(std::filesystem::path wayToStorage);
