@@ -41,6 +41,10 @@ void PasswordManager::addRecord(Record rec)
 
 void PasswordManager::changeNameRecord(std::string newName)
 {
+	if (newName.empty())
+	{
+		return;
+	}
 	auto tmp = data.extract(currRec);
 	tmp.key() = newName;
 	currRec = data.insert(std::move(tmp)).position;
