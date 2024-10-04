@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iomanip>
 #include <set>
+#include <future>
+#include <Windows.h>
 
 using namespace std;
 
@@ -18,9 +20,27 @@ void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
 
 int main()
 {
-	PasswordManager ps("testStorage");
+	PasswordManager ps;
+	std::string masterKey;
 
-	showNameSavedRecords(ps);
+	{
+		auto fut = std::async(&PasswordManager::readDataFromFile, &ps, "testStorage");
+
+		cout << "Enter master key: ";
+
+		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+		DWORD mode = 0;
+		GetConsoleMode(hStdin, &mode);
+		SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
+
+		cin >> masterKey;
+
+		fut.get();
+	}
+
+	ps.decryptData(move(masterKey));
+
+	showNameSavedRecords(ps);	
 
 	cout << "\n" << "Write help to get information about the commands.\nEnter command:\n";
 
