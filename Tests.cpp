@@ -5,10 +5,14 @@
 #include <iterator>
 #include <utility>
 
+std::string mKey = "BestMasterKeyEveryTime";
+
 void testConstructAndDestruct()
 {
 	{
-		PasswordManager ps("testStorage");
+		PasswordManager ps;
+		ps.readDataFromFile("testStorage");
+		ps.decryptData(mKey);
 
 		ASSERT_EQUAL(ps.numRecords(), 0);
 
@@ -17,7 +21,10 @@ void testConstructAndDestruct()
 	}
 
 	{
-		PasswordManager ps("testStorage");
+		PasswordManager ps;
+		ps.readDataFromFile("testStorage");
+		ps.decryptData(mKey);
+
 		Record exp1{ "f", "l", "p" };
 		Record exp2{ "s", "l", "p" };
 
@@ -28,7 +35,9 @@ void testConstructAndDestruct()
 
 void testGetNames()
 {
-	PasswordManager ps("testStorage");
+	PasswordManager ps;
+	ps.readDataFromFile("testStorage");
+	ps.decryptData(mKey);
 
 	auto names = ps.getNames();
 
@@ -39,7 +48,9 @@ void testGetNames()
 
 void testAddRecord()
 {
-	PasswordManager ps("testStorage");
+	PasswordManager ps;
+	ps.readDataFromFile("testStorage");
+	ps.decryptData(mKey);
 	
 	ps.addRecord("first", "log", "pass");
 	ps.addRecord("second", "log", "pass");
@@ -50,7 +61,7 @@ void testAddRecord()
 	ASSERT_EQUAL(rec, exp);
 	
 	auto rec2 = ps.getRecordByNumber(0);
-	Record exp2{ "second", "log", "pass", "" };
+	Record exp2{ "f", "l", "p", "" };
 	ASSERT_EQUAL(rec2, exp2);
 
 	auto size = ps.numRecords();
@@ -79,7 +90,9 @@ void testAddRecord()
 
 void testChangeRecord()
 {
-	PasswordManager ps("testStorage");
+	PasswordManager ps;
+	ps.readDataFromFile("testStorage");
+	ps.decryptData(mKey);
 
 	{
 		Record exp{ "test name","test login", "test pass", "test desription" };
@@ -103,7 +116,9 @@ void testChangeRecord()
 
 void testDelete()
 {
-	PasswordManager ps("testStorage");
+	PasswordManager ps;
+	ps.readDataFromFile("testStorage");
+	ps.decryptData(mKey);
 
 	{
 		auto numRec = ps.numRecords();
