@@ -54,6 +54,25 @@ void PasswordManager::decrypt()
 	fileData = std::move(openText);
 }
 
+void PasswordManager::encrypt()
+{
+	using namespace CryptoPP;
+
+	std::string cipher;
+
+	//Зашифровываем строку fileData и записываем результат в строку cipher
+	CBC_Mode<AES>::Encryption encrypt(aesKey.data(), aesKey.size(), cbcIv.data());
+	StringSource ss(
+		fileData, true,
+		new StreamTransformationFilter(
+			encrypt,
+			new StringSink(cipher)
+		)
+	);
+
+	fileData = std::move(cipher);
+}
+
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
 {
 	if (name.empty()) return;
