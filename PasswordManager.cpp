@@ -35,6 +35,19 @@ PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
 		std::prev(end(data), data.size() - number) : std::next(begin(data), number);
 }
 
+void PasswordManager::writeDataInFile()
+{
+	std::ofstream out(fileStorage);
+
+	if (!out.is_open())
+	{
+		throw std::runtime_error("File not open");
+	}
+
+	out << fileData;
+	out.close();
+}
+
 void PasswordManager::decrypt()
 {
 	using namespace CryptoPP;
