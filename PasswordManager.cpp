@@ -39,6 +39,21 @@ void PasswordManager::addRecord(Record rec)
 	data.emplace(std::string_view(rec.name), std::move(rec));
 }
 
+void PasswordManager::deleteRecordByName(std::string name)
+{
+	if (name.empty())
+	{
+		return;
+	}
+	if (name == currRec->first)
+	{
+		data.erase(currRec);
+		currRec = end(data);
+		return;
+	}
+	data.erase(name);
+}
+
 void PasswordManager::changeNameRecord(std::string newName)
 {
 	if (newName.empty())
