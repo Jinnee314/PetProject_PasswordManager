@@ -4,6 +4,9 @@
 #include <filesystem>
 #include <string_view>
 #include <map>
+#include <array>
+
+#include <cryptopp/aes.h>
 
 struct Record
 {
@@ -21,19 +24,34 @@ class PasswordManager
 private:
 	using DataStorage = std::map<std::string, Record>;
 	using DataIter = DataStorage::iterator;
-
-	std::filesystem::path wayToStorages;
+	
+	std::filesystem::path fileStorage;
 	DataStorage data;
 	DataIter currRec;
+
+	std::string fileData;
+
+	std::array<unsigned char, CryptoPP::AES::MAX_KEYLENGTH> aesKey;
+	std::array<unsigned char, CryptoPP::AES::BLOCKSIZE> cbcIv;
 
 	// Получение итератора по номеру.
 	// Проверка номера на выход за пределы размера 
 	// возлагаются на вызывающую функцию.
 	DataIter getIterByNumber(size_t number);
 
+	void createKeyAndIv(std::string masterKey);
+	void createStringFileData();
+	void writeDataInFile();
+
+	void decrypt();
+	void encrypt();
+
 public:
-	explicit PasswordManager(std::filesystem::path wayToStorage);
+	PasswordManager() = default;
 	~PasswordManager();
+
+	void readDataFromFile(const std::filesystem::path& file);
+	void decryptData(std::string masterKey);
 
 	void addRecord(
 		std::string name,
