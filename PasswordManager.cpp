@@ -1,8 +1,8 @@
 #include "PasswordManager.hpp"
 #include "parser.hpp"
 
-#include <iostream>
 #include <iterator>
+#include <fstream>
 #include <cryptopp/modes.h>
 #include <cryptopp/base64.h>
 
@@ -71,6 +71,31 @@ void PasswordManager::encrypt()
 	);
 
 	fileData = std::move(cipher);
+}
+
+void PasswordManager::readDataFromFile(std::filesystem::path file)
+{
+	fileStorage = std::move(file);
+
+	if (std::filesystem::file_size(fileStorage) == 0)
+	{
+		return;
+	}
+
+	std::ifstream in(fileStorage);
+
+	if (!in.is_open())
+	{
+		throw std::runtime_error("File not open");
+	}
+
+
+	for (std::string line; std::getline(in, line); )
+	{
+		fileData += line;
+	}
+
+	in.close();
 }
 
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)

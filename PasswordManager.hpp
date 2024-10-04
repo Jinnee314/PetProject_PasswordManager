@@ -50,7 +50,7 @@ public:
 	PasswordManager() = default;
 	~PasswordManager();
 
-	void readDataFromFile(const std::filesystem::path& file);
+	void readDataFromFile(std::filesystem::path file);
 	void decryptData(std::string masterKey);
 
 	void addRecord(
