@@ -40,7 +40,8 @@ private:
 	DataIter getIterByNumber(size_t number);
 
 	void createKeyAndIv(std::string masterKey);
-	void createStringFileData();
+	void createStringFromData();
+	void createDataFromString();
 	void writeDataInFile();
 
 	void decrypt();
