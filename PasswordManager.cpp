@@ -3,8 +3,11 @@
 
 #include <iterator>
 #include <fstream>
+#include <algorithm>
+
 #include <cryptopp/modes.h>
-#include <cryptopp/base64.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/filters.h>
 
 bool operator==(const Record& l, const Record& r)
 {
@@ -33,6 +36,29 @@ PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
 	size_t half = data.size() / 2;
 	return number > half ?
 		std::prev(end(data), data.size() - number) : std::next(begin(data), number);
+}
+
+void PasswordManager::createKeyAndIv(std::string masterKey)
+{
+	using namespace CryptoPP;
+
+	std::string hash;
+	SHA384 sha384;
+
+	//вычисление хэш значения и запись его в строку hash
+	StringSource ss(
+		masterKey, true,
+		new HashFilter(
+			sha384,
+			new StringSink(hash)
+		)
+	);
+
+	masterKey.clear();
+	
+	std::copy(next(begin(hash), aesKey.size()), end(hash), begin(cbcIv));
+	hash.resize(aesKey.size());
+	std::copy(begin(hash), end(hash), begin(aesKey));
 }
 
 void PasswordManager::writeDataInFile()
