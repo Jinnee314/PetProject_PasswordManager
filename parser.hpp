@@ -34,7 +34,8 @@ const std::map<std::string_view, FlagsArg> convertArg
 	{"--num", FlagsArg::Num}
 };
 
-std::vector<std::string_view> splitWords(std::string_view str);
+//функция разбиения строки на подстроки с разделителем delim
+std::vector<std::string_view> splitString(std::string_view str, char delim);
 
 // Функция для разбиения большой строки так, чтобы её можно было удобно
 // вывести в консоль не выходя за определённые границы ширины (в нашем случае 75)

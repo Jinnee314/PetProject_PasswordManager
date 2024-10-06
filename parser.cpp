@@ -4,14 +4,14 @@
 using namespace std;
 
 
-vector<string_view> splitWords(string_view str)
+vector<string_view> splitString(string_view str, char delim)
 {
 	vector<string_view> words;
-	str.remove_prefix(str.find_first_not_of(' '));
+	str.remove_prefix(str.find_first_not_of(delim));
 
 	while (!str.empty())
 	{
-		auto endWord = str.find(' ');
+		auto endWord = str.find(delim);
 		words.push_back(str.substr(0, endWord));
 		str.remove_prefix(endWord == str.npos ? str.size() : endWord);
 	}
@@ -24,7 +24,7 @@ vector<string_view> splitWords(string_view str)
 // обрабатывающие функции.
 CommandWithArgs parseCommandWithArgs(const string& str)
 {
-	auto tokens = splitWords(str);
+	auto tokens = splitString(str, ' ');
 
 	const auto& comm = tokens[0];
 	CommandWithArgs res;
