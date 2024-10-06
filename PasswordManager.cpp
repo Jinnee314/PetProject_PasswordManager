@@ -71,6 +71,22 @@ void PasswordManager::createStringFromData()
 	}
 }
 
+void PasswordManager::createDataFromString()
+{
+	auto records = splitString(fileData, ';');
+
+	for (auto& record : records)
+	{
+		auto parts = splitString(record, ' ');
+		data[std::string{ parts[0] }] = {
+			std::string( std::move(parts[0]) ),
+			std::string( std::move(parts[1]) ),
+			std::string( std::move(parts[2]) ),
+			parts.size() == 4 ? std::string( std::move(parts[3]) ) : ""
+		};
+	}
+}
+
 void PasswordManager::writeDataInFile()
 {
 	std::ofstream out(fileStorage);
