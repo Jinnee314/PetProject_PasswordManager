@@ -13,7 +13,7 @@ vector<string_view> splitString(string_view str, char delim)
 	{
 		auto endWord = str.find(delim);
 		words.push_back(str.substr(0, endWord));
-		str.remove_prefix(endWord == str.npos ? str.size() : endWord);
+		str.remove_prefix(endWord == str.npos ? str.size() : endWord + 1);
 	}
 
 	return words;
