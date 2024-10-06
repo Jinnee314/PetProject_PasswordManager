@@ -61,6 +61,16 @@ void PasswordManager::createKeyAndIv(std::string masterKey)
 	std::copy(begin(hash), end(hash), begin(aesKey));
 }
 
+void PasswordManager::createStringFromData()
+{
+	fileData.clear();
+
+	for (auto& [key, rec] : data)
+	{
+		fileData += std::move(rec.name) + " " + std::move(rec.login) + " " + std::move(rec.password) + " " + std::move(rec.description) + ";";
+	}
+}
+
 void PasswordManager::writeDataInFile()
 {
 	std::ofstream out(fileStorage);
