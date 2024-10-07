@@ -6,7 +6,7 @@
 #include <map>
 
 enum class Command {
-	Add, Del, Show, Change, Help, Error
+	Add, Del, Show, Change, Help, End, Error
 };
 
 enum class FlagsArg {
@@ -22,7 +22,8 @@ const std::map<std::string_view, Command> convertCommand
 	{"del", Command::Del},
 	{"show", Command::Show},
 	{"change", Command::Change},
-	{"help", Command::Help}
+	{"help", Command::Help},
+	{"end", Command::End}
 };
 
 const std::map<std::string_view, FlagsArg> convertArg
