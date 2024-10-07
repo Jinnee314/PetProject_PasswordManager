@@ -14,11 +14,9 @@
 
 using namespace std;
 
-std::optional<size_t> to_size_t(const std::string_view& input);
-
 void showHelp();
 void showNameSavedRecords(const PasswordManager& ps);
-void showRecord(PasswordManager& ps, const vector<Arg>& args);
+void getRecord(PasswordManager& ps, const vector<Arg>& args);
 void addNewRecord(PasswordManager& ps, const vector<Arg>& args);
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
 
@@ -65,7 +63,7 @@ int main()
 			deleteRecord(ps, args);
 			break;
 		case Command::Show:
-			showRecord(ps, args);
+			getRecord(ps, args);
 			break;
 		default:
 			break;
@@ -248,6 +246,129 @@ std::optional<size_t> to_size_t(const std::string_view& input)
 		return std::nullopt;
 	}
 	return out;
+}
+
+void changeRecordsFields(PasswordManager& ps, const vector<Arg>& args)
+{
+	if (args.empty())
+	{
+		cout << "Error. There are not enough arguments.\n"
+			<< "Try \"change --flag new_value\"\n";
+		return;
+	}
+
+	for (const auto& [type, val] : args)
+	{
+		switch (type)
+		{
+		case FlagsArg::Name:
+			ps.changeNameRecord(string{ val });
+			break;
+		case FlagsArg::Login:
+			ps.changeLoginRecord(string{ val });
+			break;
+		case FlagsArg::Pass:
+			ps.changePasswordRecord(string{ val });
+			break;
+		case FlagsArg::Des:
+			ps.changeDescriptionRecord(string{ val });
+			break;
+		}
+	}
+}
+
+void showRecordInf(PasswordManager& ps, const vector<Arg>& args)
+{
+	if (args.empty())
+	{
+		cout << "Login: " << ps.getCurrentRecordLogin() << "\n";
+		cout << "Password: " << ps.getCurrentRecordPassword() << "\n";
+		return;
+	}
+
+	if (args[0].first == FlagsArg::All)
+	{
+		cout << "Name: " << ps.getCurrentRecordName() << "\n"
+			<< "Login: " << ps.getCurrentRecordLogin() << "\n"
+			<< "Password: " << ps.getCurrentRecordPassword() << "\n"
+			<< "Description: " << ps.getCurrentRecordDescription() << "\n";
+		return;
+	}
+	if (args[0].first == FlagsArg::Login)
+	{
+		cout << "Login: " << ps.getCurrentRecordLogin() << "\n";
+		return;
+	}
+	if (args[0].first == FlagsArg::Pass)
+	{
+		cout << "Password: " << ps.getCurrentRecordPassword() << "\n";
+	}
+}
+
+void getRecord(PasswordManager& ps, const vector<Arg>& args)
+{
+	if (args[0].first != FlagsArg::Num && args[0].first != FlagsArg::Default && args[0].first != FlagsArg::Name)
+	{
+		cout << "Invalid arguments type. Try again.\n";
+		return;
+	}
+
+	Record curr;
+	if (args[0].first == FlagsArg::Num)
+	{
+		auto number = to_size_t(args[0].second);
+		if (!number || number.value() - 1 > ps.numRecords() || number.value() - 1 < 0)
+		{
+			cout << "Invalid argument. Try again.\n";
+			return;
+		}
+		curr = ps.getRecordByNumber(number.value() - 1);
+		if (curr == Record{})
+		{
+			cout << "There is no record with this number.\n";
+			return;
+		}
+	}
+	else
+	{
+		curr = ps.getRecordByName(string{ args[0].second });
+		if (curr == Record{})
+		{
+			cout << "There is no record with that name.\n";
+			return;
+		}
+	}
+
+	cout << curr;
+
+	string commandWithArgs;
+	bool end = false;
+	while (!end)
+	{
+		cout << "\nEnter command for record:\n";
+		getline(cin, commandWithArgs);
+		auto [comm, commArgs] = parseCommandWithArgs(commandWithArgs);
+
+		switch (comm)
+		{
+		case Command::Change:
+			changeRecordsFields(ps, commArgs);
+			break;
+		case Command::Del:
+			ps.deleteCurrent();
+			end = true;
+			break;
+		case Command::Show:
+			showRecordInf(ps, commArgs);
+			break;
+		case Command::End:
+			end = true;
+			break;
+		default:
+			cout << "Undefine command. Try again.\n";
+			break;
+		}
+	}
 }
 
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args)
