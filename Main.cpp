@@ -8,9 +8,13 @@
 #include <iomanip>
 #include <set>
 #include <future>
+#include <optional>
+#include <charconv>
 #include <Windows.h>
 
 using namespace std;
+
+std::optional<size_t> to_size_t(const std::string_view& input);
 
 void showHelp();
 void showNameSavedRecords(const PasswordManager& ps);
@@ -233,4 +237,42 @@ void addNewRecord(PasswordManager& ps, const vector<Arg>& args)
 	{
 		ps.addRecord(move(newRec));
 	}
+}
+
+std::optional<size_t> to_size_t(const std::string_view& input)
+{
+	size_t out;
+	const std::from_chars_result result = std::from_chars(input.data(), input.data() + input.size(), out);
+	if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+	{
+		return std::nullopt;
+	}
+	return out;
+}
+
+void deleteRecord(PasswordManager& ps, const vector<Arg>& args)
+{
+	if (args.empty())
+	{
+		cout << "Error. There are not enough arguments.\n" 
+			<< "Try \"delete --name records_name\" or \"delete --num records_number\"\n";
+		return;
+	}
+	if (args[0].first != FlagsArg::Num && args[0].first != FlagsArg::Default && args[0].first != FlagsArg::Name)
+	{
+		cout << "Invalid arguments type. Try again.\n";
+		return;
+	}
+	if (args[0].first == FlagsArg::Num)
+	{
+		auto number = to_size_t(args[0].second);
+		if (!number || number.value() - 1 > ps.numRecords() || number.value() - 1 < 0)
+		{
+			cout << "Invalid argument. Try again.\n";
+			return;
+		}
+		ps.deleteRecordByNumber(number.value() - 1);
+	}
+
+	ps.deleteRecordByName(string{ args[0].second });
 }
