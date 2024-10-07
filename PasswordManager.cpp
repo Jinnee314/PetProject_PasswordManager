@@ -225,7 +225,11 @@ void PasswordManager::deleteRecordByName(std::string name)
 		deleteCurrent();
 		return;
 	}
-	data.erase(name);
+	auto delIt = data.find(move(name));
+	if (delIt != data.end())
+	{
+		data.erase(delIt);
+	}
 }
 
 void PasswordManager::deleteRecordByNumber(size_t number)
