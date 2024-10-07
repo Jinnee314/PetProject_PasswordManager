@@ -41,6 +41,10 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 
 PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
 {
+	// Так как итераторы map не поддерживают сложение с числом,
+	// то получение i-ого итератора означает i раз увеличить итератор начала.
+	// Дабы хоть как-то сгладить ситуацию, если i больше половины размера data,
+	// то выгоднее уменьшить итератор конца data.size() - i раз.
 	size_t half = data.size() / 2;
 	return number > half ?
 		std::prev(end(data), data.size() - number) : std::next(begin(data), number);
@@ -64,6 +68,7 @@ void PasswordManager::createKeyAndIv(std::string masterKey)
 
 	masterKey.clear();
 	
+	//делим хэш на вектор инициализации и ключ шифрования
 	std::copy(next(begin(hash), aesKey.size()), end(hash), begin(cbcIv));
 	hash.resize(aesKey.size());
 	std::copy(begin(hash), end(hash), begin(aesKey));
@@ -148,7 +153,7 @@ void PasswordManager::encrypt()
 
 PasswordManager::~PasswordManager()
 {
-	if(!data.empty())
+	if(!data.empty()) // если есть записи, перезаписываем ими файл
 	{
 		createStringFromData();
 
@@ -156,7 +161,7 @@ PasswordManager::~PasswordManager()
 
 		writeDataInFile();
 	}
-	else
+	else // если нет, то очищаем файл от старых записей
 	{
 		std::ofstream out(fileStorage);
 		out.close();
@@ -220,6 +225,7 @@ void PasswordManager::deleteRecordByName(std::string name)
 	{
 		return;
 	}
+	// Если нужно удалить текущую запись.
 	if (currRec!= data.end() && name == currRec->first)
 	{
 		deleteCurrent();
@@ -254,6 +260,8 @@ void PasswordManager::changeNameRecord(std::string newName)
 	{
 		return;
 	}
+	
+	// Замена значения ключа на новое
 	auto tmp = data.extract(currRec);
 	tmp.key() = newName;
 	currRec = data.insert(std::move(tmp)).position;
