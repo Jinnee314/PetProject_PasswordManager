@@ -38,8 +38,10 @@ const std::map<std::string_view, FlagsArg> convertArg
 //функция разбиения строки на подстроки с разделителем delim
 std::vector<std::string_view> splitString(std::string_view str, char delim);
 
+const size_t WIDTH_OUT_STRING = 75;
+
 // Функция для разбиения большой строки так, чтобы её можно было удобно
-// вывести в консоль не выходя за определённые границы ширины (в нашем случае 75)
+// вывести в консоль не выходя за определённые границы ширины (в нашем случае WIDTH_OUT_STRING = 75)
 std::vector<std::string_view> splitLongStringForOut(std::string_view str);
 
 // Функция, которая парсит строку с командой и аргументами для более удобной работы.
