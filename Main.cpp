@@ -47,8 +47,10 @@ int main()
 	cout << "\n" << "Write help to get information about the commands.\nEnter command:\n";
 
 	string commandWithArgs;
-	while (getline(cin, commandWithArgs))
+	bool end = false;
+	while (!end)
 	{
+		getline(cin, commandWithArgs);
 		auto [comm, args] = parseCommandWithArgs(commandWithArgs);
 
 		switch (comm)
@@ -65,7 +67,11 @@ int main()
 		case Command::Show:
 			getRecord(ps, args);
 			break;
+		case Command::End:
+			end = true;
+			break;
 		default:
+			cout << "Undefine command. Try again.\n";
 			break;
 		}
 	}
