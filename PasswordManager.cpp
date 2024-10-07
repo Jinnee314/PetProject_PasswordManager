@@ -138,6 +138,23 @@ void PasswordManager::encrypt()
 	fileData = std::move(cipher);
 }
 
+PasswordManager::~PasswordManager()
+{
+	if(!data.empty())
+	{
+		createStringFromData();
+
+		encrypt();
+
+		writeDataInFile();
+	}
+	else
+	{
+		std::ofstream out(fileStorage);
+		out.close();
+	}
+}
+
 void PasswordManager::readDataFromFile(std::filesystem::path file)
 {
 	fileStorage = std::move(file);
