@@ -73,6 +73,11 @@ public:
 	std::vector<std::string_view> getNames() const;
 	Record getRecordByName(std::string name);
 	Record getRecordByNumber(size_t number);
+	
+	std::string getCurrentRecordName();
+	std::string getCurrentRecordLogin();
+	std::string getCurrentRecordPassword();
+	std::string getCurrentRecordDescription();
 
 	size_t numRecords() const;
 

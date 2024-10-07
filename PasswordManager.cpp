@@ -294,6 +294,26 @@ Record PasswordManager::getRecordByNumber(size_t number)
 	return currRec->second;
 }
 
+std::string PasswordManager::getCurrentRecordName()
+{
+	return currRec->first;
+}
+
+std::string PasswordManager::getCurrentRecordLogin()
+{
+	return currRec->second.login;
+}
+
+std::string PasswordManager::getCurrentRecordPassword()
+{
+	return currRec->second.password;
+}
+
+std::string PasswordManager::getCurrentRecordDescription()
+{
+	return currRec->second.description;
+}
+
 size_t PasswordManager::numRecords() const
 {
 	return data.size();
