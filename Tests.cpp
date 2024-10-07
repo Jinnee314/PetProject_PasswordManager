@@ -88,6 +88,25 @@ void testAddRecord()
 	ASSERT_EQUAL(ps.getRecordByName("AaAaAaAaAa"), r6);
 }
 
+void testGetRecordBySome()
+{
+	PasswordManager ps;
+	ps.readDataFromFile("testStorage");
+	ps.decryptData(mKey);
+
+	{
+		Record exp{ "AaAaAaAaAa", "asdfga", "ssss", "dddd" };
+		auto rec = ps.getRecordByNumber(0);
+		ASSERT_EQUAL(rec, exp);
+	}
+
+	{
+		Record exp{ "third", "log", "pass", "" };
+		auto rec = ps.getRecordByNumber(ps.numRecords() - 1);
+		ASSERT_EQUAL(rec, exp);
+	}
+}
+
 void testChangeRecord()
 {
 	PasswordManager ps;
@@ -167,6 +186,7 @@ void testAll()
 	RUN_TEST(tr, testConstructAndDestruct);
 	RUN_TEST(tr, testGetNames);
 	RUN_TEST(tr, testAddRecord);
+	RUN_TEST(tr, testGetRecordBySome);
 	RUN_TEST(tr, testChangeRecord);
 	RUN_TEST(tr, testDelete);
 }
