@@ -163,6 +163,15 @@ void PasswordManager::readDataFromFile(std::filesystem::path file)
 	in.close();
 }
 
+void PasswordManager::decryptData(std::string masterKey)
+{
+	createKeyAndIv(std::move(masterKey));
+
+	decrypt();
+
+	createDataFromString();
+}
+
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
 {
 	if (name.empty()) return;
