@@ -16,6 +16,7 @@ enum class FlagsArg {
 using Arg = std::pair<FlagsArg, std::string_view>;
 using CommandWithArgs = std::pair<Command, std::vector<Arg>>;
 
+// —ловарь дл€ перевода строк в значени€ перечислени€ Command
 const std::map<std::string_view, Command> convertCommand
 {
 	{"add", Command::Add},
@@ -26,6 +27,7 @@ const std::map<std::string_view, Command> convertCommand
 	{"end", Command::End}
 };
 
+// —ловарь дл€ перевода строк в значени€ перечислени€ FlagsArg
 const std::map<std::string_view, FlagsArg> convertArg
 {
 	{"--name", FlagsArg::Name},

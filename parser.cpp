@@ -7,7 +7,9 @@ using namespace std;
 vector<string_view> splitString(string_view str, char delim)
 {
 	vector<string_view> words;
-	str.remove_prefix(str.find_first_not_of(delim));
+
+	// Удаляем лишние разделители из начала строки
+	str.remove_prefix(str.find_first_not_of(delim)); 
 
 	while (!str.empty())
 	{
@@ -43,9 +45,6 @@ std::vector<std::string_view> splitLongStringForOut(std::string_view str)
 	return res;
 }
 
-// Функция, которая парсит строку с командой и аргументами для более удобной работы.
-// Главная цель - правильно распарсить, а логичность и верность аргументов проверяют
-// обрабатывающие функции.
 CommandWithArgs parseCommandWithArgs(const string& str)
 {
 	auto tokens = splitString(str, ' ');
@@ -64,18 +63,19 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 		res.first = itConv->second;
 	}
 
+	// случай, если команда без аргументов
 	if (tokens.size() == 1)
 	{
 		return res;
 	}
 
-	bool pairFlagAndArg = false;
+	bool pairFlagAndArg = false; // нужен для последовательной обработки аргументов после флагов
 	for (size_t i = 1; i < tokens.size(); i++)
 	{
 		if (tokens.size() > 1 && tokens[i][0] == '-' && tokens[i][1] == '-') // обработка флага
 		{
-			auto itConv = convertArg.find(tokens[i]);
-			if (itConv == convertArg.end())
+			auto itConv = convertArg.find(tokens[i]); // Получаем соответствующее значение перечисления
+			if (itConv == convertArg.end()) // Если такого флага нет, то выдаём ошибку
 			{
 				res.second.push_back({ FlagsArg::Error, move(tokens[i])});
 				return res;
