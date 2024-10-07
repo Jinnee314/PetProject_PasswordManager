@@ -192,9 +192,16 @@ void PasswordManager::decryptData(std::string masterKey)
 {
 	createKeyAndIv(std::move(masterKey));
 
+	if (fileData.empty())
+	{
+		return;
+	}
+
 	decrypt();
 
 	createDataFromString();
+
+	currRec = data.end();
 }
 
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
@@ -216,7 +223,7 @@ void PasswordManager::deleteRecordByName(std::string name)
 	{
 		return;
 	}
-	if (name == currRec->first)
+	if (currRec!= data.end() && name == currRec->first)
 	{
 		deleteCurrent();
 		return;
