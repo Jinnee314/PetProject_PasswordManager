@@ -97,14 +97,14 @@ void PasswordManager::createDataFromString()
 
 void PasswordManager::writeDataInFile()
 {
-	std::ofstream out(fileStorage);
+	std::ofstream out(fileStorage, std::ios::binary);
 
 	if (!out.is_open())
 	{
 		throw std::runtime_error("File not open");
 	}
 
-	out << fileData;
+	out.write(fileData.c_str(), fileData.size());
 	out.close();
 }
 
@@ -166,24 +166,21 @@ PasswordManager::~PasswordManager()
 void PasswordManager::readDataFromFile(std::filesystem::path file)
 {
 	fileStorage = std::move(file);
-
-	if (std::filesystem::file_size(fileStorage) == 0)
+	auto fileSize = std::filesystem::file_size(fileStorage);
+	if (fileSize == 0)
 	{
 		return;
 	}
 
-	std::ifstream in(fileStorage);
+	std::ifstream in(fileStorage, std::ios::binary);
 
 	if (!in.is_open())
 	{
 		throw std::runtime_error("File not open");
 	}
 
-
-	for (std::string line; std::getline(in, line); )
-	{
-		fileData += line;
-	}
+	fileData.resize(fileSize);
+	in.read(fileData.data(), fileSize);
 
 	in.close();
 }
