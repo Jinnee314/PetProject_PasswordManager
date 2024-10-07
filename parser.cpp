@@ -19,6 +19,30 @@ vector<string_view> splitString(string_view str, char delim)
 	return words;
 }
 
+std::vector<std::string_view> splitLongStringForOut(std::string_view str)
+{
+	std::vector<std::string_view> res;
+
+	while (!str.empty())
+	{
+		if(str.size() > WIDTH_OUT_STRING)
+		{
+			auto endStr = str.find_last_of(' ', WIDTH_OUT_STRING);
+			res.push_back(str.substr(0, endStr));
+			str.remove_prefix(
+				endStr == str.npos ? str.size() : endStr + 1
+			);
+		}
+		else
+		{
+			res.push_back(move(str));
+			break;
+		}
+	}
+
+	return res;
+}
+
 // ‘ункци€, котора€ парсит строку с командой и аргументами дл€ более удобной работы.
 // √лавна€ цель - правильно распарсить, а логичность и верность аргументов провер€ют
 // обрабатывающие функции.
