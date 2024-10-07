@@ -63,6 +63,7 @@ public:
 
 	void deleteRecordByName(std::string name);
 	void deleteRecordByNumber(size_t number);
+	void deleteCurrent();
 
 	void changeNameRecord(std::string newName);
 	void changeLoginRecord(std::string newLogin);

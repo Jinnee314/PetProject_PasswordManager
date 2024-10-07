@@ -210,8 +210,7 @@ void PasswordManager::deleteRecordByName(std::string name)
 	}
 	if (name == currRec->first)
 	{
-		data.erase(currRec);
-		currRec = end(data);
+		deleteCurrent();
 		return;
 	}
 	data.erase(name);
@@ -225,6 +224,12 @@ void PasswordManager::deleteRecordByNumber(size_t number)
 	}
 
 	data.erase(getIterByNumber(number));
+}
+
+void PasswordManager::deleteCurrent()
+{
+	data.erase(currRec);
+	currRec = end(data);
 }
 
 void PasswordManager::changeNameRecord(std::string newName)
