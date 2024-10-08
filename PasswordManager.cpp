@@ -109,6 +109,7 @@ void PasswordManager::writeDataInFile()
 		throw std::runtime_error("File not open");
 	}
 
+	out.write(hashMasterKey.c_str(), hashMasterKey.size());
 	out.write(fileData.c_str(), fileData.size());
 	out.close();
 }
@@ -151,6 +152,35 @@ void PasswordManager::encrypt()
 	fileData = std::move(cipher);
 }
 
+std::string PasswordManager::getHashSHA256(const std::string& str)
+{
+	using namespace CryptoPP;
+
+	std::string hash;
+	SHA256 sha256;
+
+	//вычисление хэш значения и запись его в строку hash
+	StringSource ss(
+		str, true,
+		new HashFilter(
+			sha256,
+			new StringSink(hash)
+		)
+	);
+
+	return hash;
+}
+
+bool PasswordManager::checkMasterKey(const std::string& masterKey)
+{
+	if (hashMasterKey.empty())
+	{
+		return true;
+	}
+	auto candHash = getHashSHA256(masterKey);
+	return hashMasterKey == candHash;
+}
+
 PasswordManager::~PasswordManager()
 {
 	if(!data.empty()) // если есть записи, перезаписываем ими файл
@@ -161,7 +191,8 @@ PasswordManager::~PasswordManager()
 
 		writeDataInFile();
 	}
-	else // если нет, то очищаем файл от старых записей
+	// если data пустое из-за того, что его отчистил пользователь
+	else if(rightMasterKey) 
 	{
 		std::ofstream out(fileStorage);
 		out.close();
@@ -184,26 +215,46 @@ void PasswordManager::readDataFromFile(std::filesystem::path file)
 		throw std::runtime_error("File not open");
 	}
 
-	fileData.resize(fileSize);
-	in.read(fileData.data(), fileSize);
+	const size_t sizeHash = 32;
+	const size_t sizeData = fileSize - sizeHash;
+
+	hashMasterKey.resize(sizeHash);
+	fileData.resize(sizeData);
+
+	in.read(hashMasterKey.data(), sizeHash);
+	in.read(fileData.data(), sizeData);
 
 	in.close();
 }
 
-void PasswordManager::decryptData(std::string masterKey)
+int PasswordManager::decryptData(std::string masterKey)
 {
+	rightMasterKey = checkMasterKey(masterKey);
+	if (!rightMasterKey)
+	{
+		return 1;
+	}
+
+	// Вычисляем хэш SHA256 от ключа, если не получили его из файла.
+	if (hashMasterKey.empty())
+	{
+		hashMasterKey = move(getHashSHA256(masterKey));
+	}
+
 	createKeyAndIv(std::move(masterKey));
+
+	currRec = data.end();
 
 	if (fileData.empty())
 	{
-		return;
+		return 0;
 	}
 
 	decrypt();
 
 	createDataFromString();
 
-	currRec = data.end();
+	return 0;
 }
 
 void PasswordManager::addRecord(std::string name, std::string login, std::string password, std::string description)
