@@ -21,6 +21,8 @@ void showNameSavedRecords(const PasswordManager& ps);
 void getRecord(PasswordManager& ps, const vector<Arg>& args);
 void addNewRecord(PasswordManager& ps, const vector<Arg>& args);
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
+
+// Нужна для того, чтобы скрывать символы ключа звёздочками.
 string getMasterKey();
 
 int main()
@@ -36,7 +38,11 @@ int main()
 		fut.get();
 	}
 
-	ps.decryptData(move(masterKey));
+	while (ps.decryptData(move(masterKey)) == 1)
+	{
+		cout << "Wrong master key. Try again.\n";
+		masterKey = getMasterKey();
+	}
 
 	showNameSavedRecords(ps);	
 
@@ -46,6 +52,7 @@ int main()
 	bool end = false;
 	while (!end)
 	{
+		cout << "\nEnter command:\n";
 		getline(cin, commandWithArgs);
 		auto [comm, args] = parseCommandWithArgs(commandWithArgs);
 
