@@ -5,13 +5,14 @@
 #include <iterator>
 #include <utility>
 
+std::filesystem::path file = "testStorage";
 std::string mKey = "BestMasterKeyEveryTime";
 
 void testConstructAndDestruct()
 {
 	{
 		PasswordManager ps;
-		ps.readDataFromFile("testStorage");
+		ps.readDataFromFile(file);
 		ps.decryptData(mKey);
 
 		ASSERT_EQUAL(ps.numRecords(), 0);
@@ -22,7 +23,7 @@ void testConstructAndDestruct()
 
 	{
 		PasswordManager ps;
-		ps.readDataFromFile("testStorage");
+		ps.readDataFromFile(file);
 		ps.decryptData(mKey);
 
 		Record exp1{ "f", "l", "p" };
@@ -36,7 +37,7 @@ void testConstructAndDestruct()
 void testGetNames()
 {
 	PasswordManager ps;
-	ps.readDataFromFile("testStorage");
+	ps.readDataFromFile(file);
 	ps.decryptData(mKey);
 
 	auto names = ps.getNames();
@@ -49,7 +50,7 @@ void testGetNames()
 void testAddRecord()
 {
 	PasswordManager ps;
-	ps.readDataFromFile("testStorage");
+	ps.readDataFromFile(file);
 	ps.decryptData(mKey);
 	
 	ps.addRecord("first", "log", "pass");
@@ -91,7 +92,7 @@ void testAddRecord()
 void testGetRecordBySome()
 {
 	PasswordManager ps;
-	ps.readDataFromFile("testStorage");
+	ps.readDataFromFile(file);
 	ps.decryptData(mKey);
 
 	{
@@ -110,7 +111,7 @@ void testGetRecordBySome()
 void testChangeRecord()
 {
 	PasswordManager ps;
-	ps.readDataFromFile("testStorage");
+	ps.readDataFromFile(file);
 	ps.decryptData(mKey);
 
 	{
@@ -133,51 +134,71 @@ void testChangeRecord()
 	}
 }
 
+void testWrongKey()
+{
+	{
+		PasswordManager ps;
+		ps.readDataFromFile(file);
+		ASSERT_EQUAL(ps.decryptData("WrongKey"), 1);
+		ASSERT_EQUAL(ps.decryptData("BestMasterKeyEvery"), 1);
+		ASSERT_EQUAL(ps.decryptData("BestMasterKeuEveryTime"), 1);
+		ASSERT_EQUAL(ps.decryptData(""), 1);
+	}
+	{
+		PasswordManager ps;
+		ps.readDataFromFile(file);
+	}
+	ASSERT(static_cast<bool>(std::filesystem::file_size(file)));
+}
+
 void testDelete()
 {
-	PasswordManager ps;
-	ps.readDataFromFile("testStorage");
-	ps.decryptData(mKey);
-
 	{
-		auto numRec = ps.numRecords();
-		ps.deleteRecordByName("qwertyuioasdfghjk");
-		ASSERT_EQUAL(ps.numRecords(), numRec)
-	}
+		PasswordManager ps;
+		ps.readDataFromFile(file);
+		ps.decryptData(mKey);
 
-	{
-		Record exp{};
-		auto recName = ps.getRecordByNumber(1).name;
-		ps.deleteRecordByNumber(1);
-		Record res;
-		try
 		{
-			res = ps.getRecordByName(recName);
+			auto numRec = ps.numRecords();
+			ps.deleteRecordByName("qwertyuioasdfghjk");
+			ASSERT_EQUAL(ps.numRecords(), numRec)
 		}
-		catch (const std::exception&)
-		{
-			res = Record{};
-		}
-		ASSERT_EQUAL(res, exp);
-	}
 
-	{
-		Record exp{};
-		ps.deleteRecordByName("test name");
-		Record res;
-		try
 		{
-			res = ps.getRecordByName("test name");
+			Record exp{};
+			auto recName = ps.getRecordByNumber(1).name;
+			ps.deleteRecordByNumber(1);
+			Record res;
+			try
+			{
+				res = ps.getRecordByName(recName);
+			}
+			catch (const std::exception&)
+			{
+				res = Record{};
+			}
+			ASSERT_EQUAL(res, exp);
 		}
-		catch (const std::exception&)
-		{
-			res = Record{};
-		}
-		ASSERT_EQUAL(res, exp);
-	}
 
-	ps.clearData();
-	ASSERT_EQUAL(ps.numRecords(), 0);
+		{
+			Record exp{};
+			ps.deleteRecordByName("test name");
+			Record res;
+			try
+			{
+				res = ps.getRecordByName("test name");
+			}
+			catch (const std::exception&)
+			{
+				res = Record{};
+			}
+			ASSERT_EQUAL(res, exp);
+		}
+
+		ps.clearData();
+		ASSERT_EQUAL(ps.numRecords(), 0);
+	}
+	ASSERT(!static_cast<bool>(std::filesystem::file_size(file)));
 }
 
 void testAll()
@@ -188,5 +209,6 @@ void testAll()
 	RUN_TEST(tr, testAddRecord);
 	RUN_TEST(tr, testGetRecordBySome);
 	RUN_TEST(tr, testChangeRecord);
+	RUN_TEST(tr, testWrongKey);	
 	RUN_TEST(tr, testDelete);
 }
