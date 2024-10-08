@@ -47,6 +47,11 @@ std::vector<std::string_view> splitLongStringForOut(std::string_view str)
 
 CommandWithArgs parseCommandWithArgs(const string& str)
 {
+	if (str.empty())
+	{
+		return CommandWithArgs{};
+	}
+
 	auto tokens = splitString(str, ' ');
 
 	const auto& comm = tokens[0];
