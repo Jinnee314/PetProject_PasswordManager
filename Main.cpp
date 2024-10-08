@@ -1,5 +1,6 @@
 #include "PasswordManager.hpp"
 #include "parser.hpp"
+#include "Tests.hpp"
 
 #include <iostream>
 #include <string>
@@ -65,7 +66,14 @@ int main()
 			deleteRecord(ps, args);
 			break;
 		case Command::Show:
-			getRecord(ps, args);
+			if (args.empty())
+			{
+				showNameSavedRecords(ps);
+			}
+			else
+			{
+				getRecord(ps, args);
+			}
 			break;
 		case Command::End:
 			end = true;
