@@ -131,7 +131,7 @@ public:
 		std::string description = "");
 
 	// Добавление записи в словарь data.
-	void addRecord(Record rec);
+	bool addRecord(Record rec);
 
 
 	/*

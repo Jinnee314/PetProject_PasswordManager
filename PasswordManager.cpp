@@ -265,9 +265,9 @@ void PasswordManager::addRecord(std::string name, std::string login, std::string
 	addRecord(std::move(rec));
 }
 
-void PasswordManager::addRecord(Record rec)
+bool PasswordManager::addRecord(Record rec)
 {
-	data.emplace(std::string_view(rec.name), std::move(rec));
+	return data.emplace(std::string_view(rec.name), std::move(rec)).second;
 }
 
 void PasswordManager::deleteRecordByName(std::string name)
