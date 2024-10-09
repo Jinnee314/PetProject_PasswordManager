@@ -29,7 +29,7 @@ const std::map<std::string_view, Command> convertCommand
 	{"exit", Command::End}
 };
 
-// Словарь для перевода строк в значения перечисления FlagsArg
+// Словарь для перевода строк в значения перечисления FlagsArg.
 const std::map<std::string_view, FlagsArg> convertArg
 {
 	{"--name", FlagsArg::Name},
@@ -40,13 +40,13 @@ const std::map<std::string_view, FlagsArg> convertArg
 	{"--all", FlagsArg::All}
 };
 
-//функция разбиения строки на подстроки с разделителем delim
-std::vector<std::string_view> splitString(std::string_view str, char delim);
+// Функция разбиения строки на подстроки с разделителем delim.
+std::vector<std::string_view> splitString(std::string_view str, std::string_view delim);
 
 const size_t WIDTH_OUT_STRING = 75;
 
 // Функция для разбиения большой строки так, чтобы её можно было удобно
-// вывести в консоль не выходя за определённые границы ширины (в нашем случае WIDTH_OUT_STRING = 75)
+// вывести в консоль не выходя за определённые границы ширины (в нашем случае WIDTH_OUT_STRING = 75).
 std::vector<std::string_view> splitLongStringForOut(std::string_view str);
 
 // Функция, которая парсит строку с командой и аргументами для более удобной работы.

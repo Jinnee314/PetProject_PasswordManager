@@ -4,7 +4,7 @@
 using namespace std;
 
 
-vector<string_view> splitString(string_view str, char delim)
+vector<string_view> splitString(string_view str, string_view delim)
 {
 	vector<string_view> words;
 
@@ -15,7 +15,7 @@ vector<string_view> splitString(string_view str, char delim)
 	{
 		auto endWord = str.find(delim);
 		words.push_back(str.substr(0, endWord));
-		str.remove_prefix(endWord == str.npos ? str.size() : endWord + 1);
+		str.remove_prefix(endWord == str.npos ? str.size() : endWord + delim.size());
 	}
 
 	return words;
@@ -52,11 +52,11 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 		return CommandWithArgs{};
 	}
 
-	auto tokens = splitString(str, ' ');
-
+	auto tokens = splitString(str, " ");
+	
 	const auto& comm = tokens[0];
 	CommandWithArgs res;
-
+	
 	// чтобы не тянуть дальше итератор, который нам не нужен
 	{
 		auto itConv = convertCommand.find(comm);
@@ -67,13 +67,13 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 		}
 		res.first = itConv->second;
 	}
-
+	
 	// случай, если команда без аргументов
 	if (tokens.size() == 1)
 	{
 		return res;
 	}
-
+	
 	bool pairFlagAndArg = false; // нужен для последовательной обработки аргументов после флагов
 	for (size_t i = 1; i < tokens.size(); i++)
 	{
