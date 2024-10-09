@@ -31,7 +31,7 @@ int main()
 	std::string masterKey;
 
 	{
-		auto fut = std::async(&PasswordManager::readDataFromFile, &ps, "testStorage");
+		auto fut = std::async(&PasswordManager::readDataFromFile, &ps, "PasswordManager.data");
 
 		masterKey = getMasterKey();
 
