@@ -85,9 +85,16 @@ int main()
 void showNameSavedRecords(const PasswordManager& ps)
 {
 	auto names = ps.getNames();
+	if (names.empty())
+	{
+		cout << "There are no saved records.\n";
+		return;
+	}
+
+	cout << "Saved records:\n";
 	for (size_t i = 0; i < names.size(); ++i)
 	{
-		std::cout << i << ". " << names[i] << "\n";
+		std::cout << i + 1 << ". " << names[i] << ";\n";
 	}
 }
 
