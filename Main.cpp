@@ -16,10 +16,27 @@
 
 using namespace std;
 
+// Выводит информацию о том, как работать с программой
 void showHelp();
+
+// Выводит пронумерованный список имён имеющихся записей.
+// Номера начинаются с 1.
 void showNameSavedRecords(const PasswordManager& ps);
+
+// Отображает информацию о конкретной записи (имя и описание), делая её текущей.
+// Выбрать запись можно указав имя (через флаг или без флага) или указав номер
+// (через флаг) согласно выводу функции showNameSavedRecords.
+// Позволяет менять поля текущей записи, вывести информацию о ней или удалить её.
 void getRecord(PasswordManager& ps, const vector<Arg>& args);
+
+// Добавляет новую запись, собирая её из аргументов или получая из диалога 
+// с пользователем. Выводит информацию о том, был ли добавлна запись.
 void addNewRecord(PasswordManager& ps, vector<Arg> args);
+
+// Удаляет указанную запись.
+// Выбрать запись можно указав имя (через флаг или без флага) или указав номер
+// (через флаг) согласно выводу функции showNameSavedRecords.
+// Если записи с указанным именем или номером нет, ничего не делает.
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
 
 // Нужна для того, чтобы скрывать символы ключа звёздочками.
@@ -30,6 +47,7 @@ int main()
 	PasswordManager ps;
 	std::string masterKey;
 
+	// Считываем данные из файла-хранилища параллельно тому, как пользователь вводит мастер ключ.
 	{
 		auto fut = std::async(&PasswordManager::readDataFromFile, &ps, "PasswordManager.data");
 
@@ -38,6 +56,7 @@ int main()
 		fut.get();
 	}
 
+	// Просим повторно ввести мастер ключ, если попытка ранее была неудачной.
 	while (ps.decryptData(move(masterKey)) == 1)
 	{
 		cout << "Wrong master key. Try again.\n";
@@ -48,16 +67,20 @@ int main()
 
 	cout << "\n" << "Write help to get information about the commands.\n";
 
-	string commandWithArgs;
-	bool end = false;
+	// Обработка команд.
+	string commandWithArgs; 
+	bool end = false; // флаг конца работы программы
 	while (!end)
 	{
+		// Считваем команду
 		cout << "\nEnter command:\n";
 		getline(cin, commandWithArgs);
-		if (commandWithArgs.empty())
+		if (commandWithArgs.empty()) // если ввели толко enter, ничего не делаем
 		{
 			continue;
 		}
+
+		//разбиваем строку на команду и аргументы
 		auto [comm, args] = parseCommandWithArgs(commandWithArgs);
 
 		switch (comm)
@@ -82,7 +105,7 @@ int main()
 			}
 			break;
 		case Command::End:
-			end = true;
+			end = true; // Сигнализируем об окончании работы программы.
 			break;
 		default:
 			cout << "Undefine command. Try again.\n";
@@ -93,10 +116,13 @@ int main()
 	return 0;
 }
 
+// Выводит информацию о том, как работать с программой
 void showHelp()
 {
 }
 
+// Выводит пронумерованный список имён имеющихся записей.
+// Номера начинаются с 1.
 void showNameSavedRecords(const PasswordManager& ps)
 {
 	auto names = ps.getNames();
@@ -113,6 +139,10 @@ void showNameSavedRecords(const PasswordManager& ps)
 	}
 }
 
+// Проверяет, удовлетворяют ли аргументы команды add условиям, чтобы корректно
+// создать новую запись.
+// Если удовлеторяют, возвращает true, если нет, выводит в консоль причину и 
+// возвращает false.
 bool isRightArgsForAdd(const vector<Arg>& args)
 {
 	if (args.empty() || args.size() > 4)
@@ -124,17 +154,20 @@ bool isRightArgsForAdd(const vector<Arg>& args)
 	bool nameCorrect = false;
 	for (const auto& [flag, val] : args)
 	{
+		// Аргументы могут иметь только конкретные типы.
 		if (flag != FlagsArg::Name && flag != FlagsArg::Login && flag != FlagsArg::Pass && flag != FlagsArg::Des)
 		{
 			cout << "Incorrect argument flag;\n";
 			return false;
 		}
-		if (flag == FlagsArg::Name && val != "")
+		// Обязательно должен быть аргумент, который установит имя новой записи
+		if (flag == FlagsArg::Name && val != "") 
 		{
 			nameCorrect = true;
 		}
 	}
 
+	// Обязательно должен быть аргумент, который установит имя новой записи
 	if (!nameCorrect)
 	{
 		cout << "There must be a --name flag with some value;\n";
@@ -144,6 +177,10 @@ bool isRightArgsForAdd(const vector<Arg>& args)
 	return true;
 }
 
+// Создаёт новую запись из аргументов, если они прошли проверку.
+// Если проверка не пройдена, возращает пустую запись.
+// Если пройдена, присваивает полям записи новые значения, предварительно
+// удалив у них лишние пробела в начале и в конце.
 Record recordFromArgs(vector<Arg> args)
 {
 	if (!isRightArgsForAdd(args))
@@ -177,16 +214,18 @@ Record recordFromArgs(vector<Arg> args)
 	return resRec;
 }
 
+// Добавляет новую запись, собирая её из аргументов или получая из диалога 
+// с пользователем. Выводит информацию о том, был ли добавлна запись.
 void addNewRecord(PasswordManager& ps, vector<Arg> args)
 {
 	Record newRec{ "", "", "", "" };
 	bool save = true;
-	if (!args.empty())
+	if (!args.empty()) // если есть аргументы, пробуем создать запись из них.
 	{
 		newRec = recordFromArgs(move(args));
 		save = newRec != Record{};
 	}
-	else
+	else // если их нет, то спрашиваем значения полей у пользователя.
 	{
 		string answer = "";
 		bool repeat = true;
@@ -206,6 +245,7 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 			cout << "Enter description: ";
 			getline(cin, newRec.description);
 
+			// Выводим новую запись.
 			cout << "New record:\n";
 			cout << "Name: " << newRec.name << "\n"
 				<< "Login: " << newRec.login << "\n"
@@ -213,7 +253,7 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 				<< "Description:\n";
 			outDescription(cout, newRec.description);
 
-
+			//Уточняем, сохранять ли созданную запись, пока пользователь корректно не ответит.
 			answer = "";
 			while (answer != "y" && answer != "yes" && answer != "Yes" && answer != "YES"
 				&& answer != "n" && answer != "no" && answer != "No" && answer != "NO")
@@ -223,12 +263,12 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 				cin.ignore();
 			}
 			save = (answer == "y" || answer == "yes" || answer == "Yes" || answer == "YES");
-			if (save)
+			if (save) // Если сохранять, то заканчиваем общение.
 			{
 				repeat = false;
 			}
-			else
-			{
+			else // Если нет, то уточням, нужно ли повторить процесс создания.
+			{				
 				answer = "";
 				while (answer != "y" && answer != "yes" && answer != "Yes" && answer != "YES"
 					&& answer != "n" && answer != "no" && answer != "No" && answer != "NO")
@@ -242,8 +282,11 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 		}
 	}
 
+	// Сохраняем запись.
 	if (save)
 	{
+		// Выводим сообщение в зависимости от того, удалось сохранить запись
+		// или нет.
 		if (ps.addRecord(move(newRec)))
 		{
 			cout << "The record has been added\n";
@@ -255,6 +298,7 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 	}
 }
 
+// Преобразуем строку с номером в число типа size_t
 std::optional<size_t> to_size_t(const std::string_view& input)
 {
 	size_t out;
@@ -266,6 +310,8 @@ std::optional<size_t> to_size_t(const std::string_view& input)
 	return out;
 }
 
+// Меняет поля текущей записи согласно аргументам.
+// Если аргументов нет, выводит сообщение и прекращает работу
 void changeRecordsFields(PasswordManager& ps, const vector<Arg>& args)
 {
 	if (args.empty())
@@ -295,6 +341,9 @@ void changeRecordsFields(PasswordManager& ps, const vector<Arg>& args)
 	}
 }
 
+// Выводит поля текущей записи в консоль.
+// Если команда без аргументов, то выводит логин и пароль.
+// Поддерживает аргументы типа Login, Pass, All.
 void showRecordInf(PasswordManager& ps, const vector<Arg>& args)
 {
 	if (args.empty())
@@ -324,6 +373,10 @@ void showRecordInf(PasswordManager& ps, const vector<Arg>& args)
 	}
 }
 
+// Отображает информацию о конкретной записи (имя и описание), делая её текущей.
+// Выбрать запись можно указав имя (через флаг или без флага) или указав номер
+// (через флаг) согласно выводу функции showNameSavedRecords.
+// Позволяет менять поля текущей записи, вывести информацию о ней или удалить её.
 void getRecord(PasswordManager& ps, const vector<Arg>& args)
 {
 	if (args[0].first != FlagsArg::Num && args[0].first != FlagsArg::Default && args[0].first != FlagsArg::Name)
@@ -332,6 +385,7 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 		return;
 	}
 
+	// Получаем запись и делаем её текущей.
 	Record curr;
 	if (args[0].first == FlagsArg::Num)
 	{
@@ -358,8 +412,9 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 		}
 	}
 
-	cout << curr;
+	cout << curr; // Выводим информацию о записи.
 
+	// Обработываем команды для текущей записи
 	string commandWithArgs;
 	bool end = false;
 	while (!end)
@@ -390,6 +445,10 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 	}
 }
 
+// Удаляет указанную запись.
+// Выбрать запись можно указав имя (через флаг или без флага) или указав номер
+// (через флаг) согласно выводу функции showNameSavedRecords.
+// Если записи с указанным именем или номером нет, ничего не делает.
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args)
 {
 	if (args.empty())
@@ -417,6 +476,7 @@ void deleteRecord(PasswordManager& ps, const vector<Arg>& args)
 	ps.deleteRecordByName(string{ args[0].second });
 }
 
+// Нужна для того, чтобы скрывать символы ключа звёздочками.
 string getMasterKey()
 {
 	string masterKey;
