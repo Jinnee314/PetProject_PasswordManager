@@ -19,7 +19,7 @@ using namespace std;
 void showHelp();
 void showNameSavedRecords(const PasswordManager& ps);
 void getRecord(PasswordManager& ps, const vector<Arg>& args);
-void addNewRecord(PasswordManager& ps, const vector<Arg>& args);
+void addNewRecord(PasswordManager& ps, vector<Arg> args);
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
 
 // Нужна для того, чтобы скрывать символы ключа звёздочками.
@@ -66,7 +66,7 @@ int main()
 			showHelp();
 			break;
 		case Command::Add:
-			addNewRecord(ps, args);
+			addNewRecord(ps, move(args));
 			break;
 		case Command::Del:
 			deleteRecord(ps, args);
@@ -177,50 +177,48 @@ Record recordFromArgs(vector<Arg> args)
 	return resRec;
 }
 
-void addNewRecord(PasswordManager& ps, const vector<Arg>& args)
+void addNewRecord(PasswordManager& ps, vector<Arg> args)
 {
 	Record newRec{ "", "", "", "" };
 	bool save = true;
 	if (!args.empty())
 	{
-		try
-		{
-			newRec = move(recordFromArgs(args));
-		}
-		catch (const std::exception& e)
-		{
-			cout << e.what() << "\n";
-			return;
-		}
+		newRec = recordFromArgs(move(args));
+		save = newRec != Record{};
 	}
 	else
 	{
 		string answer = "";
 		bool repeat = true;
 
-		while(repeat)
+		while (repeat)
 		{
+			newRec.name = "";
 			while (newRec.name.empty())
 			{
 				cout << "Enter name: ";
-				cin >> newRec.name;
+				getline(cin, newRec.name);
 			}
-			cout << "\nEnter login: ";
-			cin >> newRec.login;
-			cout << "\nEnter password: ";
-			cin >> newRec.password;
-			cout << "\nEnter description: ";
-			cin >> newRec.description;
+			cout << "Enter login: ";
+			getline(cin, newRec.login);
+			cout << "Enter password: ";
+			getline(cin, newRec.password);
+			cout << "Enter description: ";
+			getline(cin, newRec.description);
 
 			cout << "New record:\n";
-			cout << newRec << "\n";
+			cout << "Name: " << newRec.name << "\n"
+				<< "Login: " << newRec.login << "\n"
+				<< "Password: " << newRec.password << "\n"
+				<< "Description: " << newRec.description << "\n";
 
 			answer = "";
 			while (answer != "y" && answer != "yes" && answer != "Yes" && answer != "YES"
-				&& answer != "n" && answer != "no"  && answer != "No"  && answer != "NO")
+				&& answer != "n" && answer != "no" && answer != "No" && answer != "NO")
 			{
 				cout << "Save? (y\\n): ";
 				cin >> answer;
+				cin.ignore();
 			}
 			save = (answer == "y" || answer == "yes" || answer == "Yes" || answer == "YES");
 			if (save)
@@ -235,15 +233,23 @@ void addNewRecord(PasswordManager& ps, const vector<Arg>& args)
 				{
 					cout << "Repeat? (y\\n): ";
 					cin >> answer;
+					cin.ignore();
 				}
 				repeat = (answer == "y" || answer == "yes" || answer == "Yes" || answer == "YES");
 			}
 		}
 	}
-	
+
 	if (save)
 	{
-		ps.addRecord(move(newRec));
+		if (ps.addRecord(move(newRec)))
+		{
+			cout << "The record has been added\n";
+		}
+		else
+		{
+			cout << "The record has not been added\n";
+		}
 	}
 }
 
