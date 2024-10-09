@@ -11,6 +11,7 @@
 #include <future>
 #include <optional>
 #include <charconv>
+#include <conio.h>
 #include <Windows.h>
 
 using namespace std;
@@ -20,6 +21,7 @@ void showNameSavedRecords(const PasswordManager& ps);
 void getRecord(PasswordManager& ps, const vector<Arg>& args);
 void addNewRecord(PasswordManager& ps, const vector<Arg>& args);
 void deleteRecord(PasswordManager& ps, const vector<Arg>& args);
+string getMasterKey();
 
 int main()
 {
@@ -29,14 +31,7 @@ int main()
 	{
 		auto fut = std::async(&PasswordManager::readDataFromFile, &ps, "testStorage");
 
-		cout << "Enter master key: ";
-
-		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-		DWORD mode = 0;
-		GetConsoleMode(hStdin, &mode);
-		SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-
-		cin >> masterKey;
+		masterKey = getMasterKey();
 
 		fut.get();
 	}
@@ -410,4 +405,45 @@ void deleteRecord(PasswordManager& ps, const vector<Arg>& args)
 	}
 
 	ps.deleteRecordByName(string{ args[0].second });
+}
+
+string getMasterKey()
+{
+	string masterKey;
+	cout << "Enter master key: ";
+	char ch = 0;               // Переменная для символа.
+	while (true)                // Создание бесконечного цикла.
+	{
+		ch = static_cast<char>(_getch());        // Помещаем код нажатой клавиши в переменную.
+		if (ch == 13)         // Установка Enter на прерывание цикла.
+		{
+			break;         // Прерывание цикла.
+		}
+		if (ch == 27)   // Установка Esc на закрытие консоли.
+		{
+			exit(0);      // Выход из консоли.
+		}
+		if (ch == 8)     // Установка Backspace на удаление символов.
+		{
+			/*Если строка pass не является пустой, то из неё
+			можно удалять  последний символ (Иначе закрывалась консоль.)*/
+			if (!masterKey.empty())
+			{
+				/*
+				Смещение курсора на одну позицию  в лево вывод пробела и
+				снова смещение курсора влево, то есть при нажатии Backspace
+				символ будет стираться, а курсор перемещается.
+				*/
+				cout << (char)8 << ' ' << char(8);
+				masterKey.pop_back();
+			}
+		}
+		else
+		{
+			cout << '*';
+			masterKey += ch;
+		}
+	}
+	cout << "\n";
+	return masterKey;
 }
