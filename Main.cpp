@@ -82,6 +82,10 @@ int main()
 	return 0;
 }
 
+void showHelp()
+{
+}
+
 void showNameSavedRecords(const PasswordManager& ps)
 {
 	auto names = ps.getNames();
