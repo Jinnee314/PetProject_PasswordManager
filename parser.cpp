@@ -21,30 +21,6 @@ vector<string_view> splitString(string_view str, string_view delim)
 	return words;
 }
 
-std::vector<std::string_view> splitLongStringForOut(std::string_view str)
-{
-	std::vector<std::string_view> res;
-
-	while (!str.empty())
-	{
-		if(str.size() > WIDTH_OUT_STRING)
-		{
-			auto endStr = str.find_last_of(' ', WIDTH_OUT_STRING);
-			res.push_back(str.substr(0, endStr));
-			str.remove_prefix(
-				endStr == str.npos ? str.size() : endStr + 1
-			);
-		}
-		else
-		{
-			res.push_back(move(str));
-			break;
-		}
-	}
-
-	return res;
-}
-
 CommandWithArgs parseCommandWithArgs(const string& str)
 {
 	if (str.empty())
