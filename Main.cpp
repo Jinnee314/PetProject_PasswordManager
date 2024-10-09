@@ -44,9 +44,9 @@ int main()
 		masterKey = getMasterKey();
 	}
 
-	showNameSavedRecords(ps);	
+	showNameSavedRecords(ps);
 
-	cout << "\n" << "Write help to get information about the commands.\nEnter command:\n";
+	cout << "\n" << "Write help to get information about the commands.\n";
 
 	string commandWithArgs;
 	bool end = false;
@@ -54,6 +54,10 @@ int main()
 	{
 		cout << "\nEnter command:\n";
 		getline(cin, commandWithArgs);
+		if (commandWithArgs.empty())
+		{
+			continue;
+		}
 		auto [comm, args] = parseCommandWithArgs(commandWithArgs);
 
 		switch (comm)
