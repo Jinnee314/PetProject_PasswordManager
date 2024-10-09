@@ -43,8 +43,6 @@ const std::map<std::string_view, FlagsArg> convertArg
 // ‘ункци€ разбиени€ строки на подстроки с разделителем delim.
 std::vector<std::string_view> splitString(std::string_view str, std::string_view delim);
 
-const size_t WIDTH_OUT_STRING = 75;
-
 // ‘ункци€, котора€ парсит строку с командой и аргументами дл€ более удобной работы.
 // √лавна€ цель - правильно распарсить, а логичность и верность аргументов провер€ют
 // обрабатывающие функции.

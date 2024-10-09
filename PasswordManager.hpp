@@ -24,6 +24,10 @@ bool operator!=(const Record& l, const Record& r);
 // WIDTH_OUT_STRING (из файла parser.hpp).
 std::ostream& operator<<(std::ostream& out, const Record& rec);
 
+// Ширина вывода описания
+const size_t WIDTH_OUT_STRING = 75;
+
+// Выводит строку des в ширину не длиннее WIDTH_OUT_STRING (75)
 void outDescription(std::ostream& out, std::string_view des);
 
 class PasswordManager
