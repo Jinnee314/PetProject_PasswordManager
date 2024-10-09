@@ -309,7 +309,8 @@ void showRecordInf(PasswordManager& ps, const vector<Arg>& args)
 		cout << "Name: " << ps.getCurrentRecordName() << "\n"
 			<< "Login: " << ps.getCurrentRecordLogin() << "\n"
 			<< "Password: " << ps.getCurrentRecordPassword() << "\n"
-			<< "Description: " << ps.getCurrentRecordDescription() << "\n";
+			<< "Description:\n";
+		outDescription(cout, ps.getCurrentRecordDescription());
 		return;
 	}
 	if (args[0].first == FlagsArg::Login)
