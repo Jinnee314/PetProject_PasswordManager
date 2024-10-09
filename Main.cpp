@@ -144,41 +144,33 @@ bool isRightArgsForAdd(const vector<Arg>& args)
 	return true;
 }
 
-Record recordFromArgs(const vector<Arg>& args)
+Record recordFromArgs(vector<Arg> args)
 {
-	isRightArgsForAdd(args);
+	if (!isRightArgsForAdd(args))
+	{
+		return Record{};
+	}
 
 	Record resRec;
 
-	if (args[0].first == FlagsArg::Default)
+	for (auto& [flag, val] : args)
 	{
-		resRec.name = args[0].second;
-		resRec.login = args[1].second;
-		resRec.password = args[2].second;
-		if (args.size() == 4)
+		val.remove_prefix(val.find_first_not_of(' '));
+		val.remove_suffix(val.size() - 1 - val.find_last_not_of(' '));
+		switch (flag)
 		{
-			resRec.description = args[4].second;
-		}
-	}
-	else
-	{
-		for (size_t i = 0; i < args.size(); ++i)
-		{
-			switch (args[i].first)
-			{
-			case FlagsArg::Name:
-				resRec.name = args[i].second;
-				break;
-			case FlagsArg::Login:
-				resRec.login = args[i].second;
-				break;
-			case FlagsArg::Pass:
-				resRec.password = args[i].second;
-				break;
-			case FlagsArg::Des:
-				resRec.description = args[i].second;
-				break;
-			}
+		case FlagsArg::Name:
+			resRec.name = move(val);
+			break;
+		case FlagsArg::Login:
+			resRec.login = move(val);
+			break;
+		case FlagsArg::Pass:
+			resRec.password = move(val);
+			break;
+		case FlagsArg::Des:
+			resRec.description = move(val);
+			break;
 		}
 	}
 
