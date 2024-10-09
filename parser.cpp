@@ -9,7 +9,7 @@ vector<string_view> splitString(string_view str, string_view delim)
 	vector<string_view> words;
 
 	// Удаляем лишние разделители из начала строки
-	str.remove_prefix(str.find_first_not_of(delim)); 
+	str.remove_prefix(str.find_first_not_of(delim));
 
 	while (!str.empty())
 	{
@@ -52,51 +52,65 @@ CommandWithArgs parseCommandWithArgs(const string& str)
 		return CommandWithArgs{};
 	}
 
-	auto tokens = splitString(str, " ");
-	
-	const auto& comm = tokens[0];
 	CommandWithArgs res;
-	
-	// чтобы не тянуть дальше итератор, который нам не нужен
+	string_view tmp(str);
+
+	auto endComm = tmp.find(' ');
+	auto comm = tmp.substr(0, endComm); // Выделяем команду
+
+	auto convertedComm = convertCommand.find(comm);
+	if (convertedComm == convertCommand.end())
 	{
-		auto itConv = convertCommand.find(comm);
-		if (itConv == convertCommand.end())
-		{
-			res.first = Command::Error;
-			return res;
-		}
-		res.first = itConv->second;
+		res.first = Command::Error;
+		return res;
 	}
-	
-	// случай, если команда без аргументов
-	if (tokens.size() == 1)
+	res.first = convertedComm->second;
+
+	// Если команда без аргументов
+	if (endComm == tmp.npos) 
 	{
 		return res;
 	}
+
+	tmp.remove_prefix(endComm + 1);
 	
-	bool pairFlagAndArg = false; // нужен для последовательной обработки аргументов после флагов
-	for (size_t i = 1; i < tokens.size(); i++)
+	// Переменная обозначает, является ли первое слово строки - флагом
+	bool firstFlag = false; 
+	
+	// Если самое первое слово большой строки - флаг, нужно это запомнить
+	if (tmp[0] == '-' && tmp[1] == '-')
 	{
-		if (tokens.size() > 1 && tokens[i][0] == '-' && tokens[i][1] == '-') // обработка флага
+		firstFlag = true;
+	}
+
+	// Разбиваем строку на подстроки вида "ФЛАГ АРГУМЕНТ".
+	auto args = splitString(move(tmp), "--"); 
+
+	for (auto& arg : args)
+	{
+		// Если есть флаг в начале, отделяем его от аргумента и заносим в res
+		if (firstFlag)
 		{
-			auto itConv = convertArg.find(tokens[i]); // Получаем соответствующее значение перечисления
-			if (itConv == convertArg.end()) // Если такого флага нет, то выдаём ошибку
+			auto endFlag = arg.find(' ');
+			auto flag = arg.substr(0, endFlag); // получаем флаг
+			arg.remove_prefix(endFlag == arg.npos ? arg.size() : endFlag + 1); // убираем флаг из строки
+
+			auto convertedArg = convertArg.find(flag); // Получаем соответствующее значение перечисления
+			if (convertedArg == convertArg.end()) // Если такого флага нет, то выдаём ошибку и заканчиваем работу
 			{
-				res.second.push_back({ FlagsArg::Error, move(tokens[i])});
+				res.second.push_back({ FlagsArg::Error, move(flag) });
 				return res;
 			}
-			res.second.push_back({ itConv->second, "" });
-			pairFlagAndArg = true;
+			res.second.push_back({ convertedArg->second, move(arg)}); // сохраняем флаг и его значение
 		}
-		else if (pairFlagAndArg) // если до был флаг, а сейчас не флаг, значит, это аргумент флага (в силу реализации)
+		// Если флага в начале нет, то сохраняем строку с флагом Default
+		else
 		{
-			pairFlagAndArg = false;
-			res.second.back().second = move(tokens[i]);
+			res.second.push_back({ FlagsArg::Default, move(arg) });
 		}
-		else // если до не было флага, значит это просто аргумент
-		{
-			res.second.push_back({ FlagsArg::Default, move(tokens[i]) });
-		}		
+		// Если в начале общей строки флага не было, но функцию splitString выше разбила строку на несколько,
+		// значит, флаги есть дальше и нужно их правильно обработать.
+		firstFlag = true; 
 	}
 
 	return res;
