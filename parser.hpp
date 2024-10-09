@@ -32,12 +32,12 @@ const std::map<std::string_view, Command> convertCommand
 // Словарь для перевода строк в значения перечисления FlagsArg.
 const std::map<std::string_view, FlagsArg> convertArg
 {
-	{"--name", FlagsArg::Name},
-	{"--login", FlagsArg::Login},
-	{"--pass", FlagsArg::Pass},
-	{"--des", FlagsArg::Des},
-	{"--num", FlagsArg::Num},
-	{"--all", FlagsArg::All}
+	{"name", FlagsArg::Name},
+	{"login", FlagsArg::Login},
+	{"pass", FlagsArg::Pass},
+	{"des", FlagsArg::Des},
+	{"num", FlagsArg::Num},
+	{"all", FlagsArg::All}
 };
 
 // Функция разбиения строки на подстроки с разделителем delim.
