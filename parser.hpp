@@ -10,7 +10,7 @@ enum class Command {
 };
 
 enum class FlagsArg {
-	Name, Login, Pass, Des, Num, Default, Error
+	Name, Login, Pass, Des, Num, Default, All, Error
 };
 
 using Arg = std::pair<FlagsArg, std::string_view>;
@@ -21,10 +21,12 @@ const std::map<std::string_view, Command> convertCommand
 {
 	{"add", Command::Add},
 	{"del", Command::Del},
+	{"delete", Command::Del},
 	{"show", Command::Show},
 	{"change", Command::Change},
 	{"help", Command::Help},
-	{"end", Command::End}
+	{"end", Command::End},
+	{"exit", Command::End}
 };
 
 // Словарь для перевода строк в значения перечисления FlagsArg
@@ -34,7 +36,8 @@ const std::map<std::string_view, FlagsArg> convertArg
 	{"--login", FlagsArg::Login},
 	{"--pass", FlagsArg::Pass},
 	{"--des", FlagsArg::Des},
-	{"--num", FlagsArg::Num}
+	{"--num", FlagsArg::Num},
+	{"--all", FlagsArg::All}
 };
 
 //функция разбиения строки на подстроки с разделителем delim
