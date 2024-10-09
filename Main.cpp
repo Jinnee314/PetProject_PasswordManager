@@ -113,27 +113,21 @@ void showNameSavedRecords(const PasswordManager& ps)
 	}
 }
 
-// Проверка корректности аргументов для создания новой записи
-// Для вывода некоторой информации и остановки выполнения использую
-// исключения.
-void isRightArgsForAdd(const vector<Arg>& args)
+bool isRightArgsForAdd(const vector<Arg>& args)
 {
-	if (args.size() > 4)
+	if (args.empty() || args.size() > 4)
 	{
-		throw std::invalid_argument("Invalid number of arguments");
+		cout << "Invalid number of arguments;\n";
+		return false;
 	}
 
-	int checkDefault = 0;
 	bool nameCorrect = false;
 	for (const auto& [flag, val] : args)
 	{
-		if (flag == FlagsArg::Error || flag == FlagsArg::Num)
+		if (flag != FlagsArg::Name && flag != FlagsArg::Login && flag != FlagsArg::Pass && flag != FlagsArg::Des)
 		{
-			throw std::invalid_argument("Incorrect argument flag " + string{ val } + ";");
-		}
-		if (flag == FlagsArg::Default)
-		{
-			++checkDefault;
+			cout << "Incorrect argument flag;\n";
+			return false;
 		}
 		if (flag == FlagsArg::Name && val != "")
 		{
@@ -141,20 +135,13 @@ void isRightArgsForAdd(const vector<Arg>& args)
 		}
 	}
 
-	if (checkDefault != 0 && args.size() != checkDefault)
-	{
-		throw std::invalid_argument("Incorrect argument flags;");
-	}
-
-	if (checkDefault != 0 && checkDefault < 3)
-	{
-		throw std::invalid_argument("Incorrect number of arguments;");
-	}
-
 	if (!nameCorrect)
 	{
-		throw std::invalid_argument("There must be a --name flag");
+		cout << "There must be a --name flag with some value;\n";
+		return false;
 	}
+
+	return true;
 }
 
 Record recordFromArgs(const vector<Arg>& args)
