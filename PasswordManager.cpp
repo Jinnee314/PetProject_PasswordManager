@@ -24,17 +24,7 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 	out << "Name: " << rec.name << "\n"
 		<< "Description:\n";
 	
-	if (rec.description.size() < WIDTH_OUT_STRING)
-	{
-		out << rec.description << "\n";
-	}
-	else
-	{
-		for (const auto& str : splitLongStringForOut(rec.description))
-		{
-			out << str << '\n';
-		}
-	}
+	outDescription(out, rec.description);
 
 	return out;
 }
