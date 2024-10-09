@@ -80,17 +80,17 @@ void PasswordManager::createStringFromData()
 
 	for (auto& [key, rec] : data)
 	{
-		fileData += std::move(rec.name) + " " + std::move(rec.login) + " " + std::move(rec.password) + " " + std::move(rec.description) + ";";
+		fileData += std::move(rec.name) + "|" + std::move(rec.login) + "|" + std::move(rec.password) + "|" + std::move(rec.description) + "\n";
 	}
 }
 
 void PasswordManager::createDataFromString()
 {
-	auto records = splitString(fileData, ';');
+	auto records = splitString(fileData, "\n");
 
 	for (auto& record : records)
 	{
-		auto parts = splitString(record, ' ');
+		auto parts = splitString(record, "|");
 		data[std::string{ parts[0] }] = {
 			std::string( std::move(parts[0]) ),
 			std::string( std::move(parts[1]) ),
