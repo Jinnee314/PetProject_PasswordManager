@@ -210,7 +210,9 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 			cout << "Name: " << newRec.name << "\n"
 				<< "Login: " << newRec.login << "\n"
 				<< "Password: " << newRec.password << "\n"
-				<< "Description: " << newRec.description << "\n";
+				<< "Description:\n";
+			outDescription(cout, newRec.description);
+
 
 			answer = "";
 			while (answer != "y" && answer != "yes" && answer != "Yes" && answer != "YES"
