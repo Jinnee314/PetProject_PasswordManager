@@ -24,6 +24,8 @@ bool operator!=(const Record& l, const Record& r);
 // WIDTH_OUT_STRING (טח פאיכא parser.hpp).
 std::ostream& operator<<(std::ostream& out, const Record& rec);
 
+void outDescription(std::ostream& out, std::string_view des);
+
 class PasswordManager
 {
 private:

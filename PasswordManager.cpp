@@ -39,6 +39,26 @@ std::ostream& operator<<(std::ostream& out, const Record& rec)
 	return out;
 }
 
+void outDescription(std::ostream& out, std::string_view des)
+{
+	while (!des.empty())
+	{
+		if (des.size() > WIDTH_OUT_STRING)
+		{
+			auto endStr = des.find_last_of(' ', WIDTH_OUT_STRING);
+			out << des.substr(0, endStr) << "\n";
+			des.remove_prefix(
+				endStr == des.npos ? des.size() : endStr + 1
+			);
+		}
+		else
+		{
+			out << des << "\n";
+			break;
+		}
+	}
+}
+
 PasswordManager::DataIter PasswordManager::getIterByNumber(size_t number)
 {
 	// Так как итераторы map не поддерживают сложение с числом,
