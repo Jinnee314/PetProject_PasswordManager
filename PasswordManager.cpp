@@ -212,7 +212,16 @@ PasswordManager::~PasswordManager()
 void PasswordManager::readDataFromFile(std::filesystem::path file)
 {
 	fileStorage = std::move(file);
-	auto fileSize = std::filesystem::file_size(fileStorage);
+	size_t fileSize = 0;
+
+	try
+	{
+		fileSize = std::filesystem::file_size(fileStorage);
+	}
+	catch (const std::exception&)
+	{
+		fileSize = 0;
+	}
 	if (fileSize == 0)
 	{
 		return;
