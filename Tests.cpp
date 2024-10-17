@@ -29,8 +29,8 @@ void testConstructAndDestruct()
 		Record exp1{ "f", "l", "p" };
 		Record exp2{ "s", "l", "p" };
 
-		ASSERT_EQUAL(ps.getRecordByName(exp1.name), exp1);
-		ASSERT_EQUAL(ps.getRecordByName(exp2.name), exp2);
+		ASSERT_EQUAL(ps.getRecordByName(exp1.name).value(), exp1);
+		ASSERT_EQUAL(ps.getRecordByName(exp2.name).value(), exp2);
 	}
 }
 
@@ -59,11 +59,11 @@ void testAddRecord()
 	auto rec = ps.getRecordByName("first");
 	Record exp{ "first", "log", "pass", "" };
 
-	ASSERT_EQUAL(rec, exp);
+	ASSERT_EQUAL(*rec, exp);
 	
 	auto rec2 = ps.getRecordByNumber(0);
 	Record exp2{ "f", "l", "p", "" };
-	ASSERT_EQUAL(rec2, exp2);
+	ASSERT_EQUAL(*rec2, exp2);
 
 	auto size = ps.numRecords();
 	ps.addRecord("", "", "");
@@ -78,15 +78,15 @@ void testAddRecord()
 	Record exp4 = r4;
 	ps.addRecord(std::move(r3));
 	ps.addRecord(std::move(r4));
-	ASSERT_EQUAL(ps.getRecordByName("third"), exp3);
-	ASSERT_EQUAL(ps.getRecordByName("ssssssssss"), exp4);
+	ASSERT_EQUAL(ps.getRecordByName("third").value(), exp3);
+	ASSERT_EQUAL(ps.getRecordByName("ssssssssss").value(), exp4);
 
 	Record r5{ "someText", "rrrr", "tttt", "ddd" };
 	Record r6{ "AaAaAaAaAa", "asdfga", "ssss", "dddd" };
 	ps.addRecord(r5);
 	ps.addRecord(r6);
-	ASSERT_EQUAL(ps.getRecordByName("someText"), r5);
-	ASSERT_EQUAL(ps.getRecordByName("AaAaAaAaAa"), r6);
+	ASSERT_EQUAL(ps.getRecordByName("someText").value(), r5);
+	ASSERT_EQUAL(ps.getRecordByName("AaAaAaAaAa").value(), r6);
 }
 
 void testGetRecordBySome()
@@ -98,13 +98,13 @@ void testGetRecordBySome()
 	{
 		Record exp{ "AaAaAaAaAa", "asdfga", "ssss", "dddd" };
 		auto rec = ps.getRecordByNumber(0);
-		ASSERT_EQUAL(rec, exp);
+		ASSERT_EQUAL(*rec, exp);
 	}
 
 	{
 		Record exp{ "third", "log", "pass", "" };
 		auto rec = ps.getRecordByNumber(ps.numRecords() - 1);
-		ASSERT_EQUAL(rec, exp);
+		ASSERT_EQUAL(*rec, exp);
 	}
 }
 
@@ -123,14 +123,14 @@ void testChangeRecord()
 		ps.changePasswordRecord("test pass");
 
 		rec = ps.getRecordByName("test name");
-		ASSERT_EQUAL(rec, exp);
+		ASSERT_EQUAL(*rec, exp);
 	}
 
 	{
 		auto rec = ps.getRecordByName("test name");
-		auto name = rec.name;
+		auto name = rec.value().name;
 		ps.changeNameRecord("");
-		ASSERT_EQUAL(ps.getRecordByName(name).name, name);
+		ASSERT_EQUAL(ps.getRecordByName(name).value().name, name);
 	}
 }
 
@@ -166,33 +166,17 @@ void testDelete()
 
 		{
 			Record exp{};
-			auto recName = ps.getRecordByNumber(1).name;
+			auto recName = ps.getRecordByNumber(1).value().name;
 			ps.deleteRecordByNumber(1);
-			Record res;
-			try
-			{
-				res = ps.getRecordByName(recName);
-			}
-			catch (const std::exception&)
-			{
-				res = Record{};
-			}
-			ASSERT_EQUAL(res, exp);
+			auto res = ps.getRecordByName(recName);
+			ASSERT_EQUAL(*res, exp);
 		}
 
 		{
 			Record exp{};
 			ps.deleteRecordByName("test name");
-			Record res;
-			try
-			{
-				res = ps.getRecordByName("test name");
-			}
-			catch (const std::exception&)
-			{
-				res = Record{};
-			}
-			ASSERT_EQUAL(res, exp);
+			auto res = ps.getRecordByName("test name");
+			ASSERT_EQUAL(*res, exp);
 		}
 
 		ps.clearData();
