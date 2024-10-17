@@ -377,7 +377,7 @@ std::optional<Record> PasswordManager::getRecordByName(std::string name)
 	return currRec->second;
 }
 
-Record PasswordManager::getRecordByNumber(size_t number)
+std::optional<Record> PasswordManager::getRecordByNumber(size_t number)
 {
 	if (number >= data.size())
 	{

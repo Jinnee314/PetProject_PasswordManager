@@ -183,7 +183,7 @@ public:
 
 	// ѕолучение записи по номеру. ≈сли записи под таким номером нет, 
 	// возвращает пустую запись.
-	Record getRecordByNumber(size_t number);
+	std::optional<Record> getRecordByNumber(size_t number);
 	
 	const std::string& getCurrentRecordName() const;
 	const std::string& getCurrentRecordLogin() const;
