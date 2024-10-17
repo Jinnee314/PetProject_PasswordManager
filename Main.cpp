@@ -181,7 +181,7 @@ bool isRightArgsForAdd(const vector<Arg>& args)
 // Если проверка не пройдена, возращает пустую запись.
 // Если пройдена, присваивает полям записи новые значения, предварительно
 // удалив у них лишние пробела в начале и в конце.
-Record recordFromArgs(vector<Arg> args)
+optional<Record> recordFromArgs(vector<Arg> args)
 {
 	if (!isRightArgsForAdd(args))
 	{
@@ -222,8 +222,9 @@ void addNewRecord(PasswordManager& ps, vector<Arg> args)
 	bool save = true;
 	if (!args.empty()) // если есть аргументы, пробуем создать запись из них.
 	{
-		newRec = recordFromArgs(move(args));
-		save = newRec != Record{};
+		auto rec = recordFromArgs(move(args));
+		save = rec.has_value();
+		newRec = move(rec.value());
 	}
 	else // если их нет, то спрашиваем значения полей у пользователя.
 	{
