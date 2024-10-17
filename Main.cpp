@@ -44,6 +44,8 @@ string getMasterKey();
 
 int main()
 {
+	testAll();
+
 	PasswordManager ps;
 	std::string masterKey;
 
@@ -387,7 +389,7 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 	}
 
 	// Получаем запись и делаем её текущей.
-	Record curr;
+	optional<Record> opRec;
 	if (args[0].first == FlagsArg::Num)
 	{
 		auto number = to_size_t(args[0].second);
@@ -396,8 +398,8 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 			cout << "Invalid argument. Try again.\n";
 			return;
 		}
-		curr = ps.getRecordByNumber(number.value() - 1);
-		if (curr == Record{})
+		opRec = ps.getRecordByNumber(number.value() - 1);
+		if (!opRec)
 		{
 			cout << "There is no record with this number.\n";
 			return;
@@ -405,14 +407,14 @@ void getRecord(PasswordManager& ps, const vector<Arg>& args)
 	}
 	else
 	{
-		curr = ps.getRecordByName(string{ args[0].second });
-		if (curr == Record{})
+		opRec = ps.getRecordByName(string{ args[0].second });
+		if (!opRec)
 		{
 			cout << "There is no record with that name.\n";
 			return;
 		}
 	}
-
+	Record curr(move(*opRec));
 	cout << curr; // Выводим информацию о записи.
 
 	// Обработываем команды для текущей записи
