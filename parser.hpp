@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <string_view>
-#include <map>
+#include <unordered_map>
 
 enum class Command {
 	Add, Del, Show, Change, Help, End, Error
@@ -17,7 +17,7 @@ using Arg = std::pair<FlagsArg, std::string_view>;
 using CommandWithArgs = std::pair<Command, std::vector<Arg>>;
 
 // —ловарь дл€ перевода строк в значени€ перечислени€ Command
-const std::map<std::string_view, Command> convertCommand
+const std::unordered_map<std::string_view, Command> convertCommand
 {
 	{"add", Command::Add},
 	{"del", Command::Del},
@@ -30,7 +30,7 @@ const std::map<std::string_view, Command> convertCommand
 };
 
 // —ловарь дл€ перевода строк в значени€ перечислени€ FlagsArg.
-const std::map<std::string_view, FlagsArg> convertArg
+const std::unordered_map<std::string_view, FlagsArg> convertArg
 {
 	{"name", FlagsArg::Name},
 	{"login", FlagsArg::Login},
