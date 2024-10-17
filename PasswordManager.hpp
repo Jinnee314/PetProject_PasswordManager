@@ -5,6 +5,7 @@
 #include <string_view>
 #include <map>
 #include <array>
+#include <optional>
 
 #include <cryptopp/aes.h>
 
@@ -178,7 +179,7 @@ public:
 
 	// ѕолучение записи по имени. ≈сли записи с таким нет, возвращает
 	// пустую запись.
-	Record getRecordByName(std::string name);
+	std::optional<Record> getRecordByName(std::string name);
 
 	// ѕолучение записи по номеру. ≈сли записи под таким номером нет, 
 	// возвращает пустую запись.

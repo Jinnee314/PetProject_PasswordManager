@@ -366,7 +366,7 @@ std::vector<std::string_view> PasswordManager::getNames() const
 	return res;
 }
 
-Record PasswordManager::getRecordByName(std::string name)
+std::optional<Record> PasswordManager::getRecordByName(std::string name)
 {
 	currRec = data.find(name);
 	if (currRec == end(data))
