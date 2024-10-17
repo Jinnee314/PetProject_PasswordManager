@@ -388,22 +388,22 @@ Record PasswordManager::getRecordByNumber(size_t number)
 	return currRec->second;
 }
 
-std::string PasswordManager::getCurrentRecordName()
+const std::string& PasswordManager::getCurrentRecordName() const
 {
 	return currRec->first;
 }
 
-std::string PasswordManager::getCurrentRecordLogin()
+const std::string& PasswordManager::getCurrentRecordLogin() const
 {
 	return currRec->second.login;
 }
 
-std::string PasswordManager::getCurrentRecordPassword()
+const std::string& PasswordManager::getCurrentRecordPassword() const
 {
 	return currRec->second.password;
 }
 
-std::string PasswordManager::getCurrentRecordDescription()
+const std::string& PasswordManager::getCurrentRecordDescription() const
 {
 	return currRec->second.description;
 }

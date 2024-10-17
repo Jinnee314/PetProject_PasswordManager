@@ -184,10 +184,10 @@ public:
 	// возвращает пустую запись.
 	Record getRecordByNumber(size_t number);
 	
-	std::string getCurrentRecordName();
-	std::string getCurrentRecordLogin();
-	std::string getCurrentRecordPassword();
-	std::string getCurrentRecordDescription();
+	const std::string& getCurrentRecordName() const;
+	const std::string& getCurrentRecordLogin() const;
+	const std::string& getCurrentRecordPassword() const;
+	const std::string& getCurrentRecordDescription() const;
 
 
 	// Метод получения текущего количества записей
