@@ -106,6 +106,17 @@ int main()
 				getRecord(ps, args);
 			}
 			break;
+		case Command::Save:
+			try
+			{
+				ps.saveDataInFile(false);
+				cout << "The data is saved\n";
+			}
+			catch (const std::exception&)
+			{
+				cout << "The data is not saved\n";
+			}
+			break;
 		case Command::End:
 			end = true; // Сигнализируем об окончании работы программы.
 			break;
