@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 enum class Command {
-	Add, Del, Show, Change, Help, End, Error
+	Add, Del, Show, Change, Help, Save, End, Error
 };
 
 enum class FlagsArg {
@@ -26,7 +26,8 @@ const std::unordered_map<std::string_view, Command> convertCommand
 	{"change", Command::Change},
 	{"help", Command::Help},
 	{"end", Command::End},
-	{"exit", Command::End}
+	{"exit", Command::End},
+	{"save", Command::Save}
 };
 
 // —ловарь дл€ перевода строк в значени€ перечислени€ FlagsArg.
