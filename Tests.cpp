@@ -151,6 +151,40 @@ void testWrongKey()
 	ASSERT(static_cast<bool>(std::filesystem::file_size(file)));
 }
 
+void testSave()
+{
+	{
+		PasswordManager ps;
+		ps.readDataFromFile(file);
+		ps.decryptData(mKey);
+
+		Record r{ "testSave", "sdlfj", "savePass", "saveDes" };
+		ps.addRecord(std::move(r));
+
+		ps.saveDataInFile(false);
+
+		{
+			PasswordManager ps2;
+			ps2.readDataFromFile(file);
+			ps2.decryptData(mKey);
+
+			auto rec = ps2.getRecordByName("testSave");
+			r = { "testSave", "sdlfj", "savePass", "saveDes" };
+			ASSERT_EQUAL(rec.value(), r);
+		}
+	}
+
+	{
+		PasswordManager ps;
+		ps.readDataFromFile(file);
+		ps.decryptData(mKey);
+
+		auto rec = ps.getRecordByName("testSave");
+		Record r{ "testSave", "sdlfj", "savePass", "saveDes" };
+		ASSERT_EQUAL(rec.value(), r);
+	}
+}
+
 void testDelete()
 {
 	{
@@ -193,6 +227,7 @@ void testAll()
 	RUN_TEST(tr, testAddRecord);
 	RUN_TEST(tr, testGetRecordBySome);
 	RUN_TEST(tr, testChangeRecord);
-	RUN_TEST(tr, testWrongKey);	
+	RUN_TEST(tr, testWrongKey);
+	RUN_TEST(tr, testSave);
 	RUN_TEST(tr, testDelete);
 }
