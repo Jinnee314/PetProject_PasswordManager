@@ -84,13 +84,27 @@ void PasswordManager::createKeyAndIv(std::string masterKey)
 	std::copy(begin(hash), end(hash), begin(aesKey));
 }
 
-void PasswordManager::createStringFromData()
+// ѕолучаем флаг дл€ того, чтобы не копировать весь data
+void PasswordManager::createStringFromData(bool moving)
 {
 	fileData.clear();
 
-	for (auto& [key, rec] : data)
+	// ≈сли можно переместить данные, то используем перемещение.
+	// ¬ыбрал небольшое дублирование кода дл€ копировани€ только строк записи 
+	// вместо копировани€ всего map.
+	if (moving)
 	{
-		fileData += std::move(rec.name) + "|" + std::move(rec.login) + "|" + std::move(rec.password) + "|" + std::move(rec.description) + "\n";
+		for (auto& [key, rec] : data)
+		{
+			fileData += std::move(rec.name) + "|" + std::move(rec.login) + "|" + std::move(rec.password) + "|" + std::move(rec.description) + "\n";
+		}
+	}
+	else
+	{
+		for (auto& [key, rec] : data)
+		{
+			fileData += rec.name + "|" + rec.login + "|" + rec.password + "|" + rec.description + "\n";
+		}
 	}
 }
 
@@ -193,20 +207,7 @@ bool PasswordManager::checkMasterKey(const std::string& masterKey)
 
 PasswordManager::~PasswordManager()
 {
-	if(!data.empty()) // если есть записи, перезаписываем ими файл
-	{
-		createStringFromData();
-
-		encrypt();
-
-		writeDataInFile();
-	}
-	// если data пустое из-за того, что его отчистил пользователь
-	else if(rightMasterKey) 
-	{
-		std::ofstream out(fileStorage);
-		out.close();
-	}
+	saveDataInFile(true);
 }
 
 void PasswordManager::readDataFromFile(std::filesystem::path file)
@@ -244,6 +245,28 @@ void PasswordManager::readDataFromFile(std::filesystem::path file)
 	in.read(fileData.data(), sizeData);
 
 	in.close();
+}
+
+
+void PasswordManager::saveDataInFile(bool endWork)
+{
+	if (!data.empty()) // если есть записи, перезаписываем ими файл
+	{
+		// ≈сли данные в дальнейшем не понадоб€тс€, то можем строки записей
+		// из data переместить в строку fileData.
+		// ≈сли понадоб€тс€, то необходимо копировать строки записей в строку fileData
+		createStringFromData(endWork);
+
+		encrypt();
+
+		writeDataInFile();
+	}
+	// если data пустое из-за того, что его отчистил пользователь
+	else if (rightMasterKey)
+	{
+		std::ofstream out(fileStorage);
+		out.close();
+	}
 }
 
 int PasswordManager::decryptData(std::string masterKey)
